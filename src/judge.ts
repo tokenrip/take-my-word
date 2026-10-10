@@ -133,13 +133,25 @@ export async function judgeRun(run: RunRecord, judge: ModelEntry, model: Languag
   }
 }
 
+/**
+ * Latest successful record per (run, judge), current prompt version only, plus every judge id that
+ * attempted a run in this file (failures included), so a judge that failed everywhere still counts
+ * as a panel member when consensus is computed.
+ */
+export function loadJudgeFile(batch: string, modelId: string, caseId: string, root = RESULTS_DIR): { ok: JudgeRecord[]; attempted: Set<string> } {
+  const latest = new Map<string, JudgeRecord>();
+  const attempted = new Set<string>();
+  for (const r of readJsonl<JudgeRecord>(judgeFile(batch, modelId, caseId, root))) {
+    if (r.prompt_version !== PROMPT_VERSION) continue;
+    attempted.add(r.judge_id);
+    if (r.labels) latest.set(`${r.run_id}|${r.judge_id}`, r);
+  }
+  return { ok: [...latest.values()], attempted };
+}
+
 /** Latest successful record per (run, judge), current prompt version only. */
 export function loadJudgements(batch: string, modelId: string, caseId: string, root = RESULTS_DIR): JudgeRecord[] {
-  const latest = new Map<string, JudgeRecord>();
-  for (const r of readJsonl<JudgeRecord>(judgeFile(batch, modelId, caseId, root))) {
-    if (r.labels && r.prompt_version === PROMPT_VERSION) latest.set(`${r.run_id}|${r.judge_id}`, r);
-  }
-  return [...latest.values()];
+  return loadJudgeFile(batch, modelId, caseId, root).ok;
 }
 
 export function saveJudgement(batch: string, rec: JudgeRecord, root = RESULTS_DIR): void {

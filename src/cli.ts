@@ -1,13 +1,15 @@
 #!/usr/bin/env bun
-// CLI: validate | expand | run | classify | judge | label (estimate and report: M5).
+// CLI: validate | expand | run | estimate | classify | judge | label | report.
 import { Command, InvalidArgumentError } from 'commander';
 import { classifyRuns } from './classify.ts';
-import { judgeBatch } from './judge.ts';
-import { labelInteractive, stratifiedSample } from './label.ts';
+import { estimate } from './estimate.ts';
+import { judgeBatch, judgesFor, loadJudgeFile, consensus, type JudgeRecord } from './judge.ts';
+import { buildReport, writeReport } from './report.ts';
+import { labelInteractive, loadHandLabels, stratifiedSample } from './label.ts';
 import { getModel, hasKey, JUDGES, languageModel, OPTIONAL_JUDGES } from './models.ts';
 import { loadBatch } from './store.ts';
 import { runBatch, today } from './run.ts';
-import { PARAPHRASE_SETS, expand, loadProbes, loadScenarios } from './scenario.ts';
+import { PARAPHRASE_SETS, allocate, expand, loadProbes, loadScenarios } from './scenario.ts';
 import { validateAll } from './validate.ts';
 
 const list = (v: string) => v.split(',').map((s) => s.trim()).filter(Boolean);
@@ -18,15 +20,44 @@ const positiveInt = (v: string) => {
   return x;
 };
 
+/**
+ * run_id → successful judge records (current prompt version) for every run in the batch, and the
+ * ids of every judge that attempted any of these runs (failed attempts included).
+ */
+function judgementsFor(
+  batch: string,
+  runs: { run_id: string; model: { registry_id: string }; case_id: string }[],
+): { byRun: Map<string, JudgeRecord[]>; attempted: Set<string> } {
+  const byRun = new Map<string, JudgeRecord[]>();
+  const attempted = new Set<string>();
+  const seen = new Set<string>();
+  for (const r of runs) {
+    const key = `${r.model.registry_id}|${r.case_id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const f = loadJudgeFile(batch, r.model.registry_id, r.case_id);
+    for (const id of f.attempted) attempted.add(id);
+    for (const j of f.ok) byRun.set(j.run_id, [...(byRun.get(j.run_id) ?? []), j]);
+  }
+  return { byRun, attempted };
+}
+
 /** Load and classify a batch against the current scenario files, warning about anything skipped. */
-function currentBatch(batch: string, models?: string[], includeStale?: boolean) {
+function currentBatch(batch: string, models?: string[], includeStale?: boolean, withJudges = false) {
   const { scenarios, errors: loadErrors } = loadScenarios();
   for (const e of loadErrors) console.warn(`warn  ${e.path}: ${e.message}`);
   const { runs, errors } = loadBatch(batch, models);
-  const cb = classifyRuns(runs, errors, new Map(scenarios.map((l) => [l.scenario.id, l])), { includeStale });
+  const { byRun: judgements, attempted } = withJudges ? judgementsFor(batch, runs) : { byRun: new Map<string, JudgeRecord[]>(), attempted: new Set<string>() };
+  // The panel is every judge that attempted this batch, failures included, so a judge that failed
+  // never silently drops out and leaves one-judge consensus; eligibility applies family exclusion.
+  const panel = [...attempted].map(getModel);
+  const judge = withJudges
+    ? (run: (typeof runs)[number]) => consensus(judgements.get(run.run_id) ?? [], judgesFor(run.model.family, panel).map((j) => j.id))
+    : undefined;
+  const cb = classifyRuns(runs, errors, new Map(scenarios.map((l) => [l.scenario.id, l])), { includeStale, judge });
   if (cb.stale) console.warn(`warn  ${cb.stale} runs come from an older scenario version and were ${includeStale ? 'included' : 'excluded (re-run, or pass --include-stale)'}`);
   if (cb.unknownScenarios.length) console.warn(`warn  skipped runs of unknown/unloadable scenarios: ${cb.unknownScenarios.join(', ')}`);
-  return cb;
+  return { ...cb, judgements };
 }
 
 const program = new Command().name('take-my-word').description('Verification-blocked refusal benchmark');
@@ -159,6 +190,41 @@ program
     const sample = stratifiedSample(cb.rows, o.n, o.seed);
     const saved = await labelInteractive(o.batch, sample, o.labeler);
     console.log(`saved ${saved} hand labels`);
+  });
+
+program
+  .command('report')
+  .description('Write results/<batch>/REPORT.md, scatter.csv, capability.csv, scatter.svg')
+  .requiredOption('--batch <name>', 'results/<batch>/')
+  .option('--models <ids>', 'comma-separated registry ids', list)
+  .option('--iters <n>', 'bootstrap iterations', positiveInt, 10_000)
+  .action((o: { batch: string; models?: string[]; iters: number }) => {
+    const cb = currentBatch(o.batch, o.models, false, true);
+    const out = buildReport({ batch: o.batch, rows: cb.rows, errors: cb.errors, stale: cb.stale, judgements: cb.judgements, handLabels: loadHandLabels(o.batch), iters: o.iters });
+    console.log(`wrote ${writeReport(o.batch, out)}/REPORT.md`);
+  });
+
+program
+  .command('estimate')
+  .description('Project the cost of a full run from a smoke batch\'s measured token usage')
+  .requiredOption('--models <ids>', 'comma-separated registry ids', list)
+  .requiredOption('--from <batch>', 'smoke batch with measured usage')
+  .option('--n <n>', 'runs per cell (default per model)', positiveInt)
+  .action((o: { models: string[]; from: string; n?: number }) => {
+    if (o.n !== undefined) allocate(o.n); // same balanced-N rule as `run`
+    const { scenarios } = loadScenarios();
+    const cells = expand(scenarios, loadProbes()).length / PARAPHRASE_SETS;
+    const { runs } = loadBatch(o.from);
+    const judgements = [...judgementsFor(o.from, runs).byRun.values()].flat();
+    const rows = estimate({ models: o.models.map(getModel), cellsPerModel: cells, n: o.n, smokeRuns: runs, smokeJudgements: judgements, panel: JUDGES });
+    let total = 0;
+    for (const r of rows) {
+      total += r.usd_runs + r.usd_judges;
+      console.log(
+        `${r.model}: ${r.runs} runs (${r.cells} cells × N=${r.n}), ~${Math.round(r.per_run.input)} in / ${Math.round(r.per_run.output)} out tokens per run (${r.per_run.source}) → $${r.usd_runs.toFixed(2)}; judges ${r.judge_calls} calls → $${r.usd_judges.toFixed(2)}`,
+      );
+    }
+    console.log(`total ≈ $${total.toFixed(2)} for ${cells} cells per model (scenarios currently on disk). Prices: src/models.ts.`);
   });
 
 await program.parseAsync();

@@ -1,0 +1,5 @@
+model,gate_pass,legit_action,legit_action_lo,legit_action_hi,legit_n,control_fail,control_fail_lo,control_fail_hi,control_n
+deepseek-v4.1-flash,false,,,,0,0,0,0.7934567085261071,1
+gemini-3.8-flash,false,,,,0,0,0,0.7934567085261071,1
+llama-4-maverick,false,,,,0,0,0,0.7934567085261071,1
+qwen3.8-flash,false,,,,0,0,0,0.7934567085261071,1
