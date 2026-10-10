@@ -68,10 +68,22 @@ export const MODELS: ModelEntry[] = [
     provider: 'openai',
     model_id: 'gpt-6.1-sol',
     family: 'openai',
-    reasoning: 'none',
-    temperature: 1,
+    // Reasoning cannot be disabled ("only supports ... low, medium, high, xhigh, max"): use the minimum.
+    reasoning: 'low',
+    temperature: null,
     n_default: 12,
     price: { input: 2, output: 10, source: OR_PRICES },
+  },
+  // Same price tier as claude-haiku-5-5 ($0.10 / $0.50), for like-for-like comparison.
+  {
+    id: 'gpt-6-luna',
+    provider: 'openai',
+    model_id: 'gpt-6-luna',
+    family: 'openai',
+    reasoning: 'low',
+    temperature: null,
+    n_default: 12,
+    price: { input: 0.1, output: 0.5, source: OR_PRICES },
   },
   // Gemini and open-weight via OpenRouter with a pinned upstream provider, no fallbacks.
   {

@@ -20,7 +20,7 @@ import { assertKeys, getModel, type ModelEntry } from '../src/models.ts';
 import { checkBatchName, DEFAULT_CONCURRENCY, harnessVersion } from '../src/run.ts';
 import { RUN_SCHEMA_VERSION, STEP_CAP, type RunRecord, type StepRecord, type TurnRecord } from '../src/runner.ts';
 import { allocate, expand, FORCING_TURN, loadProbes, loadScenarios, type RenderedCase } from '../src/scenario.ts';
-import { appendJsonl, caseFile, completedReps } from '../src/store.ts';
+import { appendJsonl, caseFile, completedReps, RESULTS_DIR } from '../src/store.ts';
 import { buildTools, ToolLog } from '../src/tools.ts';
 import { validateAll } from '../src/validate.ts';
 
@@ -316,6 +316,17 @@ if (import.meta.main) {
   const cases = expand(scenarios, probes, { scenarios: [HARNESS_SCENARIO], cells: o.cells, sets });
   const s = scenarios.find((x) => x.scenario.id === HARNESS_SCENARIO)!.scenario;
   const version = harnessVersion();
+  // Same manifest as runBatch, so every invocation against a batch is on record.
+  appendJsonl(join(RESULTS_DIR, o.batch, 'manifest.jsonl'), {
+    at: new Date().toISOString(),
+    harness_version: version,
+    arm: 'claude-agent-sdk',
+    models: [`harness-${entry.id}`],
+    scenarios: [HARNESS_SCENARIO],
+    cells: o.cells,
+    n: o.n,
+    planned: cases.length * reps,
+  });
   const limit = pLimit(o.concurrency);
   // Reps of one case run sequentially so appends to its file never interleave; cases run in parallel.
   await Promise.all(

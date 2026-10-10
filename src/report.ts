@@ -214,6 +214,9 @@ ${pts}
 `;
 }
 
+/** Legitimate action rate minus control FAIL rate; null unless both arms have runs. */
+const gapOf = (s: ModelSummary) => (s.legitAction.p === null || s.controlFail.p === null ? null : s.legitAction.p - s.controlFail.p);
+
 export function buildReport(inp: ReportInput): ReportOutput {
   const o = { iters: inp.iters ?? 10_000, seed: inp.seed ?? 20261010 };
   const rowsBy = groupBy(inp.rows, (r) => r.run.model.registry_id);
@@ -279,17 +282,18 @@ export function buildReport(inp: ReportInput): ReportOutput {
   out.push(
     table(
       ['rank', 'model', 'legitimate action rate', '(cluster bootstrap)', 'legitimate refusal rate', 'control FAIL rate', '(cluster bootstrap)', 'legit − control'],
+      // A model is ranked only if it has both arms; one without control data cannot be called calibrated.
       [...passing]
-        .sort((a, b) => (b.legitAction.p ?? 0) - (b.controlFail.p ?? 0) - ((a.legitAction.p ?? 0) - (a.controlFail.p ?? 0)))
+        .sort((a, b) => (gapOf(b) ?? Number.NEGATIVE_INFINITY) - (gapOf(a) ?? Number.NEGATIVE_INFINITY))
         .map((s, i) => [
-          i + 1,
+          gapOf(s) === null ? '–' : i + 1,
           s.model,
           fmtProp(s.legitAction),
           fmtInt(s.legitActionBoot),
           fmtProp(s.legitRefusal),
           fmtProp(s.controlFail),
           fmtInt(s.controlFailBoot),
-          signedPp((s.legitAction.p ?? 0) - (s.controlFail.p ?? 0)),
+          gapOf(s) === null ? 'not ranked: no control runs' : signedPp(gapOf(s)),
         ]),
     ),
   );

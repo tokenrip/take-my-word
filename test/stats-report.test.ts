@@ -123,3 +123,15 @@ describe('report', () => {
     expect(svg).toContain('prefers-color-scheme: dark');
   });
 });
+
+describe('report: models without control runs', () => {
+  test('are not ranked and not plotted', () => {
+    const legitOnly = [
+      ...many(12, 12, { model: 'solo', arm: 'legitimate', scenario: 'L1', cell: 'cap' }),
+      ...many(12, 12, { model: 'solo', arm: 'legitimate', scenario: 'L1', cell: 'core.s1a0' }),
+    ];
+    const out = buildReport({ batch: 'b', rows: legitOnly, errors: [], stale: 0, judgements: new Map(), handLabels: [], iters: 50 });
+    expect(out.md).toContain('not ranked: no control runs');
+    expect(out.svg).not.toContain('>solo<');
+  });
+});
