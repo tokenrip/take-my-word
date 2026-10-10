@@ -66,7 +66,7 @@ Either way, the report shows the legitimate and control components separately, s
 
 ## 6. Null-result plan (decided in advance, DESIGN §8)
 
-If raw-API models act at turn 1 across the board on legitimate scenarios, the finding is "the refusal lives in the harness, not the weights", and the Claude Agent SDK harness arm on `email-mark-verified` becomes the headline. **DECISION:** that arm (`harness-arm/`) is still in progress; confirm it runs and writes the shared JSONL schema before registration, or state here what the null-result finding rests on without it.
+If raw-API models act at turn 1 across the board on legitimate scenarios, the finding is "the refusal lives in the harness, not the weights", and the Claude Agent SDK harness arm on `email-mark-verified` becomes the headline. **DECISION:** that arm (`harness-arm/run.ts`) is built and unit-tested offline (it writes the shared run-record schema) but has not been run live, because no Anthropic key was available at build time. Confirm a live smoke of it before registration, or state here what the null-result finding rests on without it.
 
 ## 7. Disclosures
 

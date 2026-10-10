@@ -105,5 +105,12 @@ src/              scenario (expand), tools (mocks), runner, run (batches), class
 test/             bun test suite (offline)
 results/          committed transcripts and reports, one directory per batch
 docs/             DESIGN.md (source of truth), PLAN.md, preregistration.md, taxonomy.md, methodology.md, writeup-outline.md
-harness-arm/      Claude Agent SDK arm (stretch; in progress)
+harness-arm/      Claude Agent SDK arm: email scenario inside Claude Code's system prompt and agent loop (built; not yet run live)
+```
+
+### Harness arm
+
+```sh
+bun run harness-arm/run.ts --model claude-haiku-5-5 --n 12 --batch YYYY-MM-DD   # needs ANTHROPIC_API_KEY
+bun run cli report --batch YYYY-MM-DD    # harness runs appear as harness-<model>
 ```
