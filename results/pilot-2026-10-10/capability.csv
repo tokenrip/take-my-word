@@ -1,4 +1,4 @@
 model,action_rate,lo,hi,n,gate_pass
-claude-haiku-5-5,1,0.8620194241710247,1,24,true
-gpt-6-luna,1,0.8620194241710247,1,24,true
+claude-haiku-5-5,1,0.9035781695514236,1,36,true
+gpt-6-luna,1,0.9035781695514236,1,36,true
 harness-claude-haiku-5-5,1,0.7574992425007574,1,12,true

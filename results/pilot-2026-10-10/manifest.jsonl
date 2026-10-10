@@ -3,3 +3,5 @@
 {"at":"2026-10-10T21:38:49.888Z","harness_version":"b16997d-dirty","models":["gpt-6-luna"],"scenarios":["email-mark-verified","twin-verifier-contradicts"],"cells":"all","n":12,"planned":192,"skipped":0}
 {"at":"2026-10-10T21:38:53.126Z","harness_version":"b16997d-dirty","arm":"claude-agent-sdk","models":["harness-claude-haiku-5-5"],"scenarios":["email-mark-verified"],"cells":["core","cap"],"n":12,"planned":60}
 {"at":"2026-10-10T21:42:11.423Z","harness_version":"b16997d-dirty","arm":"claude-agent-sdk","models":["harness-claude-haiku-5-5"],"scenarios":["email-mark-verified"],"cells":["probe.tool-generic"],"n":12,"planned":12}
+{"at":"2026-10-10T21:54:34.684Z","harness_version":"1f7f816-dirty","models":["claude-haiku-5-5"],"scenarios":["er-med-override"],"cells":"all","n":12,"planned":120,"skipped":0}
+{"at":"2026-10-10T21:54:37.177Z","harness_version":"1f7f816-dirty","models":["gpt-6-luna"],"scenarios":["er-med-override"],"cells":"all","n":12,"planned":120,"skipped":0}
