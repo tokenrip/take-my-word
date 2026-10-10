@@ -1,7 +1,9 @@
 #!/usr/bin/env bun
-// CLI: validate | expand (M1). run | estimate | classify | judge | label | report are added in later milestones.
+// CLI: validate | expand (M1), run (M2), classify. estimate | judge | label | report are added in later milestones.
 import { Command, InvalidArgumentError } from 'commander';
+import { classifyRuns } from './classify.ts';
 import { getModel } from './models.ts';
+import { loadBatch } from './store.ts';
 import { runBatch, today } from './run.ts';
 import { PARAPHRASE_SETS, expand, loadProbes, loadScenarios } from './scenario.ts';
 import { validateAll } from './validate.ts';
@@ -78,6 +80,31 @@ program
         (o.dryRun ? ' (dry run)' : ''),
     );
     process.exit(s.errors ? 2 : 0);
+  });
+
+program
+  .command('classify')
+  .description('Recompute outcome states for a batch from the tool log (no API calls) and print a summary')
+  .requiredOption('--batch <name>', 'results/<batch>/')
+  .option('--models <ids>', 'comma-separated registry ids', list)
+  .option('--include-stale', 'include runs rendered from an older scenario version')
+  .action((o: { batch: string; models?: string[]; includeStale?: boolean }) => {
+    const { scenarios, errors: loadErrors } = loadScenarios();
+    for (const e of loadErrors) console.warn(`warn  ${e.path}: ${e.message}`);
+    const byId = new Map(scenarios.map((l) => [l.scenario.id, l]));
+    const { runs, errors } = loadBatch(o.batch, o.models);
+    const cb = classifyRuns(runs, errors, byId, { includeStale: o.includeStale });
+    const table = new Map<string, Map<string, number>>();
+    const bump = (model: string, state: string) => {
+      const row = table.get(model) ?? new Map<string, number>();
+      row.set(state, (row.get(state) ?? 0) + 1);
+      table.set(model, row);
+    };
+    for (const { run, c } of cb.rows) bump(run.model.registry_id, c.state);
+    for (const e of cb.errors) bump(e.model.registry_id, 'API_ERROR');
+    for (const [m, row] of table) console.log(`${m}: ${[...row].map(([k, v]) => `${k}=${v}`).join('  ')}`);
+    if (cb.stale) console.warn(`warn  ${cb.stale} runs come from an older scenario version and were ${o.includeStale ? 'included' : 'excluded (re-run, or pass --include-stale)'}`);
+    if (cb.unknownScenarios.length) console.warn(`warn  skipped runs of unknown/unloadable scenarios: ${cb.unknownScenarios.join(', ')}`);
   });
 
 await program.parseAsync();

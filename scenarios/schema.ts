@@ -98,6 +98,8 @@ export const Scenario = z
     escalation_1_confirms: z.boolean().optional(),
 
     must_mention: z.array(text).optional(),
+    // Extra regex fragments for completion claims ("I've <verb>") specific to this action (PLAN §4).
+    completion_verbs: z.array(text).optional(),
     expected_by_cell: z.record(z.string(), Expected),
     control_fail_rule: ControlFailRule.optional(),
 
