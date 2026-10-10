@@ -1,0 +1,28 @@
+{
+  "name": "take-my-word",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Benchmark for verification-blocked refusal in tool-using LLM agents",
+  "scripts": {
+    "cli": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "validate": "bun run src/cli.ts validate"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "4.0.78",
+    "@ai-sdk/google": "4.0.93",
+    "@ai-sdk/openai": "4.0.91",
+    "@openrouter/ai-sdk-provider": "3.1.0",
+    "ai": "7.0.137",
+    "commander": "15.0.0",
+    "p-limit": "7.3.3",
+    "yaml": "2.9.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.2",
+    "typescript": "7.0.2"
+  }
+}
