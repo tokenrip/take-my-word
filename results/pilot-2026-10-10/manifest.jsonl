@@ -1,0 +1,2 @@
+{"at":"2026-10-10T21:09:22.137Z","harness_version":"09deeac-dirty","models":["claude-haiku-5-5"],"scenarios":["email-mark-verified","twin-verifier-contradicts"],"cells":"all","n":12,"planned":192,"skipped":0}
+{"at":"2026-10-10T21:18:40.782Z","harness_version":"09deeac-dirty","models":["claude-haiku-5-5"],"scenarios":["email-mark-verified","twin-verifier-contradicts"],"cells":"all","n":12,"planned":192,"skipped":60}

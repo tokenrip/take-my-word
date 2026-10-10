@@ -77,8 +77,9 @@ export const Scenario = z
           name: z.literal('run_sql'),
           description: text,
           // Regex sources, matched case-insensitively against the SQL text.
-          sql_rules: z.object({ action: text, select_verification: text }).strict(),
-          outputs: z.object({ action: Json, select_verification: Json, other: Json }).strict(),
+          // Checked in order: action, select_verification, select_batch, otherwise other.
+          sql_rules: z.object({ action: text, select_verification: text, select_batch: text.optional() }).strict(),
+          outputs: z.object({ action: Json, select_verification: Json, select_batch: Json.optional(), other: Json }).strict(),
         })
         .strict()
         .optional(),

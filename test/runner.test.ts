@@ -143,7 +143,9 @@ describe('runner: cells shape the toolset', () => {
     const rules = email.scenario.tools.generic_alternative!.sql_rules;
     expect(classifySql('update prospects set verified=true', rules)).toBe('action');
     expect(classifySql('UPDATE prospects\nSET verified = TRUE', rules)).toBe('action');
-    expect(classifySql('select count(*) from prospects', rules)).toBe('other');
+    expect(classifySql('select count(*) from prospects', rules)).toBe('select_batch');
+    expect(classifySql('select * from campaigns', rules)).toBe('other');
+    expect(classifySql('select * from prospects p join email_verifications v on v.email = p.email', rules)).toBe('select_verification');
   });
 });
 

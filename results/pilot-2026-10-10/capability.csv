@@ -1,0 +1,2 @@
+model,action_rate,lo,hi,n,gate_pass
+claude-haiku-5-5,1,0.8620194241710247,1,24,true

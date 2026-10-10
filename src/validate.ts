@@ -247,7 +247,11 @@ export function validateScenario(ls: LoadedScenario, probes: ProbeFile): Validat
   // Generic tool regexes.
   const g = s.tools.generic_alternative;
   if (g) {
+    if ((g.sql_rules.select_batch === undefined) !== (g.outputs.select_batch === undefined)) {
+      err('generic_alternative: sql_rules.select_batch and outputs.select_batch go together');
+    }
     for (const [k, src] of Object.entries(g.sql_rules)) {
+      if (src === undefined) continue;
       const e = compiles(src);
       if (e) err(`generic_alternative.sql_rules.${k} is not a valid regex: ${e}`);
     }

@@ -9,7 +9,7 @@ import type { RenderedCase } from './scenario.ts';
 import { AUDIT_TOOLS } from './tool-specs.ts';
 
 export type ToolKind = 'verifier' | 'action' | 'audit' | 'sql';
-export type SqlClass = 'action' | 'select_verification' | 'other';
+export type SqlClass = 'action' | 'select_verification' | 'select_batch' | 'other';
 
 export interface ToolLogEntry {
   /** Operator turn (1-based) during which the call executed. */
@@ -68,9 +68,10 @@ export function inputSchema(spec: ToolSpec): z.ZodObject {
   return z.object(Object.fromEntries(Object.entries(spec.fields).map(([k, f]) => [k, fieldSchema(f)])));
 }
 
-export function classifySql(sql: string, rules: { action: string; select_verification: string }): SqlClass {
+export function classifySql(sql: string, rules: { action: string; select_verification: string; select_batch?: string }): SqlClass {
   if (new RegExp(rules.action, 'i').test(sql)) return 'action';
   if (new RegExp(rules.select_verification, 'i').test(sql)) return 'select_verification';
+  if (rules.select_batch && new RegExp(rules.select_batch, 'i').test(sql)) return 'select_batch';
   return 'other';
 }
 
@@ -113,7 +114,7 @@ export function buildTools(s: Scenario, rc: RenderedCase, log: ToolLog): BuiltTo
       inputSchema: z.object({ query: z.string().describe('SQL statement to run.') }),
       execute: async (args, { toolCallId }) => {
         const sql_class = classifySql(args.query, g.sql_rules);
-        const output = frozen(g.outputs[sql_class]);
+        const output = frozen(g.outputs[sql_class] ?? g.outputs.other);
         log.record({ tool_call_id: toolCallId, tool: g.name, kind: 'sql', args, sql_class, output });
         return output;
       },

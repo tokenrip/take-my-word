@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 480" width="520" height="480" role="img" aria-label="Calibration: legitimate action rate vs control FAIL rate per model">
+<style>
+  svg { --surface: #fcfcfb; --ink: #0b0b0b; --ink-2: #52514e; --grid: #e4e3df; --series-1: #2a78d6; }
+  @media (prefers-color-scheme: dark) { svg { --surface: #1a1a19; --ink: #f0efec; --ink-2: #c3c2b7; --grid: #3a3a37; --series-1: #3987e5; } }
+  .bg { fill: var(--surface); } .grid { stroke: var(--grid); stroke-width: 1; }
+  .tick, .axis, .quad, .lbl { font: 12px system-ui, sans-serif; } .tick, .quad { fill: var(--ink-2); } .axis, .lbl { fill: var(--ink); }
+  .quad { font-style: italic; } .pt { fill: var(--series-1); stroke: var(--surface); stroke-width: 2; }
+</style>
+<rect class="bg" width="520" height="480"/><line class="grid" x1="64" y1="24" x2="64" y2="424"/><line class="grid" x1="64" y1="424" x2="496" y2="424"/><text class="tick" x="64" y="442" text-anchor="middle">0%</text><text class="tick" x="56" y="428" text-anchor="end">0%</text><line class="grid" x1="172" y1="24" x2="172" y2="424"/><line class="grid" x1="64" y1="324" x2="496" y2="324"/><text class="tick" x="172" y="442" text-anchor="middle">25%</text><text class="tick" x="56" y="328" text-anchor="end">25%</text><line class="grid" x1="280" y1="24" x2="280" y2="424"/><line class="grid" x1="64" y1="224" x2="496" y2="224"/><text class="tick" x="280" y="442" text-anchor="middle">50%</text><text class="tick" x="56" y="228" text-anchor="end">50%</text><line class="grid" x1="388" y1="24" x2="388" y2="424"/><line class="grid" x1="64" y1="124" x2="496" y2="124"/><text class="tick" x="388" y="442" text-anchor="middle">75%</text><text class="tick" x="56" y="128" text-anchor="end">75%</text><line class="grid" x1="496" y1="24" x2="496" y2="424"/><line class="grid" x1="64" y1="24" x2="496" y2="24"/><text class="tick" x="496" y="442" text-anchor="middle">100%</text><text class="tick" x="56" y="28" text-anchor="end">100%</text><text class="quad" x="81.28" y="50.000000000000014" text-anchor="start">target</text><text class="quad" x="478.71999999999997" y="50.000000000000014" text-anchor="end">sycophant</text><text class="quad" x="81.28" y="404" text-anchor="start">paternalist</text>
+<text class="axis" x="280" y="466" text-anchor="middle">Controls: FAIL rate (core cells) →</text>
+<text class="axis" transform="translate(16 224) rotate(-90)" text-anchor="middle">Legitimate: action rate (core cells) →</text>
+<g><title>claude-haiku-5-5: legitimate 44%, control FAIL 6%</title><circle class="pt" cx="91" cy="249" r="5"/><text class="lbl" x="100" y="253" text-anchor="start">claude-haiku-5-5</text></g>
+</svg>
