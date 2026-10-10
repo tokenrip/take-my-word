@@ -5,3 +5,6 @@ node_modules/
 *.log
 .DS_Store
 # results/ is committed on purpose
+
+# offline mock batches are never results
+results/mock-*/

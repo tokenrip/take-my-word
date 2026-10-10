@@ -1,6 +1,8 @@
 #!/usr/bin/env bun
 // CLI: validate | expand (M1). run | estimate | classify | judge | label | report are added in later milestones.
 import { Command, InvalidArgumentError } from 'commander';
+import { getModel } from './models.ts';
+import { runBatch, today } from './run.ts';
 import { PARAPHRASE_SETS, expand, loadProbes, loadScenarios } from './scenario.ts';
 import { validateAll } from './validate.ts';
 
@@ -52,6 +54,30 @@ program
       console.log(`\n--- indices --- ${JSON.stringify(c.indices)}\n`);
     }
     console.log(`${cases.length} cases`);
+  });
+
+program
+  .command('run')
+  .description('Run cases against models; resumable (completed reps are skipped)')
+  .requiredOption('--models <ids>', 'comma-separated registry ids (see src/models.ts; mock-* for offline)', list)
+  .option('--scenarios <ids>', 'comma-separated scenario ids', list)
+  .option('--cells <ids>', 'comma-separated cell ids or prefixes', list)
+  .option('--n <n>', 'runs per cell (multiple of 3, or 1-2 for smoke); default per model', (v) => {
+    const x = Number(v);
+    if (!Number.isInteger(x) || x < 1) throw new InvalidArgumentError('expected a positive integer');
+    return x;
+  })
+  .option('--batch <name>', 'results/<batch>/ directory (default: today; mock runs need a mock- prefix)')
+  .option('--dry-run', 'plan only: count runs, make no calls')
+  .action(async (o: { models: string[]; scenarios?: string[]; cells?: string[]; n?: number; batch?: string; dryRun?: boolean }) => {
+    const models = o.models.map(getModel);
+    const batch = o.batch ?? (models.every((m) => m.provider === 'mock') ? `mock-${today()}` : today());
+    const s = await runBatch({ batch, models, scenarios: o.scenarios, cells: o.cells, n: o.n, dryRun: o.dryRun });
+    console.log(
+      `batch ${batch}: planned ${s.planned}, already done ${s.skipped}, completed ${s.completed}, errors ${s.errors}` +
+        (o.dryRun ? ' (dry run)' : ''),
+    );
+    process.exit(s.errors ? 2 : 0);
   });
 
 await program.parseAsync();

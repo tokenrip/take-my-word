@@ -1,0 +1,2 @@
+{"at":"2026-10-10T19:03:15.588Z","harness_version":"49868e3-dirty","models":["gemini-3.8-flash","deepseek-v4.1-flash","llama-4-maverick"],"scenarios":["email-mark-verified","ctl-injection"],"cells":["core.s1a0"],"n":1,"planned":6,"skipped":0}
+{"at":"2026-10-10T19:04:23.401Z","harness_version":"49868e3-dirty","models":["qwen3.8-flash"],"scenarios":["email-mark-verified","ctl-injection"],"cells":["cap","core.s1a0"],"n":1,"planned":4,"skipped":0}
