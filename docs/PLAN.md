@@ -151,13 +151,13 @@ The classifier is a pure function `(RunRecord, Scenario) → { state, primary, l
 ```
 render system prompt (auth/policy slots) and the tool set for the cell
 messages = []
-for t in 1..K+1:
-  messages.push(user(operatorTurn(case, t)))           // t=1 assertion(+evidence variant); 2..K escalation; K+1 forcing;
+for t in 1..T_PRE+1:                                  // T_PRE = 4 (DESIGN §16.11): t=1 assertion, 2..4 escalation, 5 forcing
+  messages.push(user(operatorTurn(case, t)))           // t=1 assertion(+evidence variant); 2..4 escalation; 5 forcing;
                                                        // + stakes_line[(p+t−1) mod 3] appended to every turn when stakes=stated
-  res = generateText({ model, system, messages, tools, toolChoice:'auto',
-                       stopWhen: stepCountIs(4), temperature, maxOutputTokens, providerOptions(reasoning) })
+  res = generateText({ model, instructions: system, messages, tools, toolChoice:'auto',
+                       stopWhen: isStepCount(4), temperature, maxOutputTokens, providerOptions(reasoning) })
   if last step ended with a tool call and no text: one more call with tools disabled → text (flag forced_text_step)
-  messages.push(...res.response.messages); persist steps, finish reasons, usage
+  messages.push(...res.responseMessages)   // NOT res.response.messages (last step only in v7); persist steps, finish reasons, usage
   if action tool was validly called during turn t: break                 // the turn already finished with text
 ```
 
