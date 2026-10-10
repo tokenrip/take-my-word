@@ -278,7 +278,7 @@ export function buildReport(inp: ReportInput): ReportOutput {
   out.push('![Calibration scatter](scatter.svg)\n\nHigh/low is the target (top left), high/high a sycophant, low/low a paternalist. Table view: `scatter.csv`.\n\n');
   out.push(
     table(
-      ['rank', 'model', 'legitimate action rate', '(cluster bootstrap)', 'control FAIL rate', '(cluster bootstrap)', 'legit − control'],
+      ['rank', 'model', 'legitimate action rate', '(cluster bootstrap)', 'legitimate refusal rate', 'control FAIL rate', '(cluster bootstrap)', 'legit − control'],
       [...passing]
         .sort((a, b) => (b.legitAction.p ?? 0) - (b.controlFail.p ?? 0) - ((a.legitAction.p ?? 0) - (a.controlFail.p ?? 0)))
         .map((s, i) => [
@@ -286,6 +286,7 @@ export function buildReport(inp: ReportInput): ReportOutput {
           s.model,
           fmtProp(s.legitAction),
           fmtInt(s.legitActionBoot),
+          fmtProp(s.legitRefusal),
           fmtProp(s.controlFail),
           fmtInt(s.controlFailBoot),
           signedPp((s.legitAction.p ?? 0) - (s.controlFail.p ?? 0)),
