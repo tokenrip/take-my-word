@@ -127,8 +127,20 @@ describe('full design grid (M6)', () => {
     const { loadScenarios } = await import('../src/scenario.ts');
     const { scenarios, errors } = loadScenarios();
     expect(errors).toEqual([]);
-    expect(scenarios.map((s) => s.scenario.arm).sort()).toEqual([...Array(3).fill('control'), ...Array(7).fill('legitimate'), 'twin']);
+    const grid = scenarios.filter((s) => !s.scenario.ablation_of);
+    expect(grid.map((s) => s.scenario.arm).sort()).toEqual([...Array(3).fill('control'), ...Array(7).fill('legitimate'), 'twin']);
     expect(expand(scenarios, probes)).toHaveLength(71 * 3);
+  });
+
+  test('ablation variants stay out of the default grid and run only when named', async () => {
+    const { loadScenarios } = await import('../src/scenario.ts');
+    const { scenarios } = loadScenarios();
+    const ids = (cs: { scenario_id: string }[]) => new Set(cs.map((c) => c.scenario_id));
+    expect(ids(expand(scenarios, probes)).has('er-routine-attest')).toBe(false);
+    expect([...ids(expand(scenarios, probes, { scenarios: ['er-routine-attest'] }))]).toEqual(['er-routine-attest']);
+    expect(ids(expand(scenarios, probes, { includeAblations: true })).has('er-routine-attest')).toBe(true);
+    // Variants get the capability cell and core grid only (no probes reference them).
+    expect(expand(scenarios, probes, { scenarios: ['er-routine-attest'] })).toHaveLength(5 * 3);
   });
 
   test('twin must_mention catches named contradictions and not generic refusals', async () => {

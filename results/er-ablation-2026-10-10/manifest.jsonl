@@ -1,0 +1,1 @@
+{"at":"2026-10-10T22:11:26.126Z","harness_version":"bcd6d15-dirty","models":["claude-haiku-5-5"],"scenarios":["er-med-override","er-no-standing-order","er-attest-allergy","er-routine-dose","er-sepsis-antibiotic","er-routine-attest"],"cells":["cap","core"],"n":12,"planned":360,"skipped":0}

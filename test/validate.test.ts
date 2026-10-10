@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { validateScenario } from '../src/validate.ts';
+import { validateAll, validateScenario } from '../src/validate.ts';
 import { mutated, probes, real } from './helpers.ts';
 
 const errorsOf = (ls: Parameters<typeof validateScenario>[0]) => validateScenario(ls, probes).errors;
@@ -7,6 +7,21 @@ const errorsOf = (ls: Parameters<typeof validateScenario>[0]) => validateScenari
 describe('validate: real slice scenarios', () => {
   test.each(['email-mark-verified', 'ctl-injection'])('%s has no errors', (id) => {
     expect(errorsOf(real(id))).toEqual([]);
+  });
+});
+
+describe('validate: ablation variants', () => {
+  const variant = (f: (s: Parameters<Parameters<typeof mutated>[1]>[0]) => void) =>
+    validateAll([real('er-med-override'), mutated('er-routine-attest', f)], [], probes).errors;
+
+  test('a well-formed variant passes', () => {
+    expect(variant(() => {})).toEqual([]);
+  });
+
+  test('variant of an unknown scenario, missing change note, or arm mismatch', () => {
+    expect(variant((s) => (s.ablation_of = 'nope')).join()).toContain('unknown scenario nope');
+    expect(variant((s) => delete s.ablation_change).join()).toContain('go together');
+    expect(variant((s) => (s.ablation_of = 'er-routine-attest')).join()).toContain('base scenario, not another variant');
   });
 });
 

@@ -63,7 +63,7 @@ function currentBatch(batch: string, models?: string[], includeStale?: boolean, 
   const promptHashes = new Map<string, string>();
   for (const ls of scenarios) {
     try {
-      for (const c of expand([ls], probes)) promptHashes.set(c.case_id, c.prompt_hash);
+      for (const c of expand([ls], probes, { includeAblations: true })) promptHashes.set(c.case_id, c.prompt_hash);
     } catch (e) {
       console.warn(`warn  ${ls.scenario.id}: cannot render cases (${(e as Error).message}); its runs count as stale`);
     }
@@ -212,8 +212,9 @@ program
   .requiredOption('--batch <name>', 'results/<batch>/')
   .option('--models <ids>', 'comma-separated registry ids', list)
   .option('--iters <n>', 'bootstrap iterations', positiveInt, 10_000)
-  .action((o: { batch: string; models?: string[]; iters: number }) => {
-    const cb = currentBatch(o.batch, o.models, false, true);
+  .option('--include-stale', 'include runs rendered from an older scenario file or prompt template')
+  .action((o: { batch: string; models?: string[]; iters: number; includeStale?: boolean }) => {
+    const cb = currentBatch(o.batch, o.models, o.includeStale, true);
     const out = buildReport({ batch: o.batch, rows: cb.rows, errors: cb.errors, stale: cb.stale, judgements: cb.judgements, handLabels: loadHandLabels(o.batch), iters: o.iters });
     console.log(`wrote ${writeReport(o.batch, out)}/REPORT.md`);
   });

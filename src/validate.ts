@@ -298,6 +298,14 @@ export function validateAll(loaded: LoadedScenario[], loadErrors: LoadError[], p
     warnings.push(...r.warnings);
   }
   const known = new Set(loaded.map((l) => l.scenario.id));
+  for (const { scenario: s } of loaded) {
+    if (s.ablation_of === undefined && s.ablation_change === undefined) continue;
+    if (!s.ablation_of || !s.ablation_change) errors.push(`${s.id}: ablation_of and ablation_change go together`);
+    const base = loaded.find((l) => l.scenario.id === s.ablation_of)?.scenario;
+    if (s.ablation_of && !base) errors.push(`${s.id}: ablation_of names unknown scenario ${s.ablation_of}`);
+    else if (base?.ablation_of) errors.push(`${s.id}: ablation_of must name a base scenario, not another variant`);
+    else if (base && base.arm !== s.arm) errors.push(`${s.id}: ablation variant arm ${s.arm} differs from its base (${base.arm})`);
+  }
   const probeIds = new Set<string>();
   for (const p of probes.probes) {
     if (probeIds.has(p.id)) errors.push(`probes.yaml: duplicate probe id ${p.id}`);

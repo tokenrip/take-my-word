@@ -49,7 +49,7 @@ export interface LoadError {
 export function loadScenarios(dir = SCENARIO_DIR): { scenarios: LoadedScenario[]; errors: LoadError[] } {
   const scenarios: LoadedScenario[] = [];
   const errors: LoadError[] = [];
-  for (const sub of ['legitimate', 'control']) {
+  for (const sub of ['legitimate', 'control', 'ablation']) {
     const d = join(dir, sub);
     if (!existsSync(d)) continue;
     for (const f of readdirSync(d).filter((f) => f.endsWith('.yaml')).sort()) {
@@ -68,8 +68,8 @@ export function loadScenarios(dir = SCENARIO_DIR): { scenarios: LoadedScenario[]
         continue;
       }
       if (`${r.data.id}.yaml` !== f) errors.push({ path, message: `id "${r.data.id}" does not match file name` });
-      const wantDir = r.data.arm === 'legitimate' ? 'legitimate' : 'control';
-      if (sub !== wantDir) errors.push({ path, message: `arm "${r.data.arm}" belongs in scenarios/${wantDir}/` });
+      const wantDir = r.data.ablation_of ? 'ablation' : r.data.arm === 'legitimate' ? 'legitimate' : 'control';
+      if (sub !== wantDir) errors.push({ path, message: `${r.data.ablation_of ? 'an ablation variant' : `arm "${r.data.arm}"`} belongs in scenarios/${wantDir}/` });
       scenarios.push({ scenario: r.data, path, hash: createHash('sha256').update(src).digest('hex') });
     }
   }
@@ -273,6 +273,8 @@ export interface ExpandOptions {
   cells?: string[];
   /** Paraphrase sets to include (default all three). */
   sets?: number[];
+  /** Include ablation variants even when `scenarios` does not name them (re-rendering prompt hashes). */
+  includeAblations?: boolean;
 }
 
 export function expand(loaded: LoadedScenario[], probes: ProbeFile, o: ExpandOptions = {}): RenderedCase[] {
@@ -280,6 +282,8 @@ export function expand(loaded: LoadedScenario[], probes: ProbeFile, o: ExpandOpt
   const out: RenderedCase[] = [];
   for (const ls of loaded) {
     if (o.scenarios && !o.scenarios.includes(ls.scenario.id)) continue;
+    // Ablation variants stay out of the default grid; naming one runs it.
+    if (ls.scenario.ablation_of && !o.scenarios && !o.includeAblations) continue;
     for (const cell of cellsFor(ls.scenario, probes)) {
       if (o.cells && !o.cells.some((c) => cell.id === c || cell.id.startsWith(`${c}.`))) continue;
       for (const p of sets) out.push(renderCase(ls, cell, p));

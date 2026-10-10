@@ -117,6 +117,11 @@ export const Scenario = z
       note: text,
     }).strict(),
     expert_expected: text,
+
+    // Ablation variants (scenarios/ablation/): a copy of a legitimate scenario with one named change, used to
+    // find what drives refusal. Never part of the default grid; run only when named with --scenarios.
+    ablation_of: z.string().optional(),
+    ablation_change: text.optional(),
   })
   .strict();
 export type Scenario = z.infer<typeof Scenario>;
