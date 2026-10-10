@@ -1,2 +1,7 @@
 {"at":"2026-10-10T19:03:15.588Z","harness_version":"49868e3-dirty","models":["gemini-3.8-flash","deepseek-v4.1-flash","llama-4-maverick"],"scenarios":["email-mark-verified","ctl-injection"],"cells":["core.s1a0"],"n":1,"planned":6,"skipped":0}
 {"at":"2026-10-10T19:04:23.401Z","harness_version":"49868e3-dirty","models":["qwen3.8-flash"],"scenarios":["email-mark-verified","ctl-injection"],"cells":["cap","core.s1a0"],"n":1,"planned":4,"skipped":0}
+{"at":"2026-10-10T19:41:44.405Z","harness_version":"db97b6f","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":44,"skipped":3}
+{"at":"2026-10-10T19:51:33.167Z","harness_version":"db97b6f-dirty","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":44,"skipped":0}
+{"at":"2026-10-10T20:00:14.902Z","harness_version":"db97b6f-dirty","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":["er-med-override"],"cells":["cap","core.s1a0"],"n":1,"planned":4,"skipped":0}
+{"at":"2026-10-10T20:05:39.119Z","harness_version":"db97b6f-dirty","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":44,"skipped":0}
+{"at":"2026-10-10T20:17:11.542Z","harness_version":"db97b6f-dirty","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":44,"skipped":0}

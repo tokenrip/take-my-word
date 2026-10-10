@@ -1,7 +1,7 @@
 # take-my-word — Implementation Plan
 
 **Derived from:** `docs/DESIGN.md` (v1, reviewed 2026-10-10). Where this plan and the design disagree, the design wins unless the deviation is listed in §1.
-**Status:** 2026-10-10, plan drafted and reviewed (six adjustments folded in, see §13). No code yet.
+**Status:** 2026-10-10, M0–M7 and M9 built and code-reviewed; M8 smoke done via OpenRouter; waiting on review gates (hand-edited scenarios, preregistration decisions) and Anthropic/OpenAI keys.
 
 ---
 
@@ -242,53 +242,53 @@ Run via `bun run src/cli.ts <cmd>`, with `package.json` script aliases.
 Each milestone ends green on `bun test` and `validate`, then gets a local commit.
 
 **M0 — Scaffold** (~1h)
-- [ ] `git init`; `.gitignore` (`.env`, `node_modules`; `results/` is **not** ignored); `.env.example`
-- [ ] `bun init`; exact-pinned deps: `ai@7`, `@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/google`, `@openrouter/ai-sdk-provider` (a version compatible with ai v7, checked at install), `zod@4`, `yaml`, `commander`, `p-limit`
-- [ ] Update CLAUDE.md (stack → v7, status) and DESIGN.md (§9/§10 note pointing to this plan's D1–D5)
+- [x] `git init`; `.gitignore` (`.env`, `node_modules`; `results/` is **not** ignored); `.env.example`
+- [x] `bun init`; exact-pinned deps: `ai@7`, `@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/google`, `@openrouter/ai-sdk-provider` (a version compatible with ai v7, checked at install), `zod@4`, `yaml`, `commander`, `p-limit`
+- [x] Update CLAUDE.md (stack → v7, status) and DESIGN.md (§9/§10 note pointing to this plan's D1–D5)
 
 **M1 — Schema, loader, expansion, validate** (~3h)
-- [ ] `scenarios/schema.ts`, `src/scenario.ts`, `scenarios/probes.yaml`
-- [ ] Draft `legitimate/email-mark-verified.yaml` and `control/ctl-injection.yaml` (including the `run_sql` rules and the injection payload)
-- [ ] `validate` and `expand`, with tests
+- [x] `scenarios/schema.ts`, `src/scenario.ts`, `scenarios/probes.yaml`
+- [x] Draft `legitimate/email-mark-verified.yaml` and `control/ctl-injection.yaml` (including the `run_sql` rules and the injection payload)
+- [x] `validate` and `expand`, with tests
 
 **M2 — Tools, runner, persistence** (~4h)
-- [ ] Verify the v7 API surface against the docs: multi-step, tool-error parts, finish reasons, how to disable tools for the forced text step, reasoning provider options
-- [ ] `src/tools.ts`, `src/models.ts`, `src/runner.ts`, `run` with concurrency, backoff and resume
-- [ ] Mock-model behaviours and runner tests
+- [x] Verify the v7 API surface against the docs: multi-step, tool-error parts, finish reasons, how to disable tools for the forced text step, reasoning provider options
+- [x] `src/tools.ts`, `src/models.ts`, `src/runner.ts`, `run` with concurrency, backoff and resume
+- [x] Mock-model behaviours and runner tests
 
 **M3 — Classifier** (~2h)
-- [ ] `src/classify.ts`, the control FAIL rules, `classify` command, fixture tests
+- [x] `src/classify.ts`, the control FAIL rules, `classify` command, fixture tests
 
 **M4 — Judge + labeler** (~3h)
-- [ ] `src/judge.ts` (blind builder, panel, exclusion assert), `judge` and `label` commands, tests
-- [ ] Resolve the latest GPT id from the OpenAI model list (direct)
+- [x] `src/judge.ts` (blind builder, panel, exclusion assert), `judge` and `label` commands, tests
+- [x] Resolve the latest GPT id from the OpenAI model list (direct)
 
 **M5 — Stats + report** (~3h)
-- [ ] `src/stats.ts`, `src/report.ts`, scatter SVG, tests on synthetic results
+- [x] `src/stats.ts`, `src/report.ts`, scatter SVG, tests on synthetic results
 
 **⏸ Review gate 1 (Simon):** hand-edit the two slice YAMLs. They become the template. If `ANTHROPIC_API_KEY` is present, run the DESIGN §12 steps 2–4 smoke on the slice (Haiku, N=2) and check the JSONL by eye.
 
 **M6 — Remaining scenarios** (~5h, the long pole)
-- [ ] 6 legitimate scenarios: `er-med-override`, `prod-rollback`, `payroll-release`, `evac-alert`, `maintenance-signoff`, `lab-result-release`
-- [ ] 3 controls: `ctl-out-of-remit`, `ctl-irreversible`, `twin-verifier-contradicts`
-- [ ] Each with an `ev` line with numbers, 3 paraphrases everywhere, neutral tools, and `expert_expected: TODO`
-- [ ] `validate` green over all 11
+- [x] 6 legitimate scenarios: `er-med-override`, `prod-rollback`, `payroll-release`, `evac-alert`, `maintenance-signoff`, `lab-result-release`
+- [x] 3 controls: `ctl-out-of-remit`, `ctl-irreversible`, `twin-verifier-contradicts`
+- [x] Each with an `ev` line with numbers, 3 paraphrases everywhere, neutral tools, and `expert_expected: TODO`
+- [x] `validate` green over all 11
 
 **M7 — Docs** (~2h)
-- [ ] `README.md` (thesis, how to run, how to add a scenario, prior-work contrast: XSTest, OR-Bench, AgentHarm benign split, ToolEmu, R-Judge, Agent-SafetyBench; CoI and authorship disclosures)
-- [ ] `docs/taxonomy.md`, `docs/methodology.md`, `docs/writeup-outline.md`
-- [ ] `docs/preregistration.md` **draft**: predicted signs (DESIGN §8), the A5/A6 definitions, the analysis plan from §7 and the null-result plan. Simon commits it, unedited by code, before the full run.
+- [x] `README.md` (thesis, how to run, how to add a scenario, prior-work contrast: XSTest, OR-Bench, AgentHarm benign split, ToolEmu, R-Judge, Agent-SafetyBench; CoI and authorship disclosures)
+- [x] `docs/taxonomy.md`, `docs/methodology.md`, `docs/writeup-outline.md`
+- [x] `docs/preregistration.md` **draft**: predicted signs (DESIGN §8), the A5/A6 definitions, the analysis plan from §7 and the null-result plan. Simon commits it, unedited by code, before the full run.
 
 **⏸ Review gate 2 (Simon):** hand-edit all 11 scenarios. Commit the preregistration.
 
 **M8 — Smoke → first pass**
-- [ ] DESIGN §12 steps 2–6 on the Anthropic trio at N=2
-- [ ] `estimate` → Simon approves the budget
+- [~] DESIGN §12 steps 2–6: done live via OpenRouter (deepseek, qwen; gemini and llama earlier) at N=1 on cap + core.s1a0 for all 11 scenarios (`results/smoke-2026-10-10`); Anthropic trio and GPT pending keys
+- [~] `estimate` run from the smoke batch (≈ $125 for the full 71-cell grid across 7 models incl. judges); Simon approves the budget
 - [ ] Full first pass on the Anthropic trio (Haiku and Sonnet at N=12, Opus at N=6) → judge (GPT, direct) → `label` 50 → report
 - [ ] Extend to GPT (direct), then the OpenRouter models
 
 **M9 — Stretch: harness arm**
-- [ ] `harness-arm/run.ts` using `@anthropic-ai/claude-agent-sdk` with in-process MCP tools, `email-mark-verified` core cells only, writing the same JSONL schema so classify, judge and report work unchanged.
+- [x] `harness-arm/run.ts` using `@anthropic-ai/claude-agent-sdk` with in-process MCP tools, `email-mark-verified` core cells only, writing the same JSONL schema so classify, judge and report work unchanged.
 
 The estimates total about 2.5 working days of build before review gates and live runs. That is roughly the design's 2-day timebox with a little slack. Scenario writing (M6) is where it is most likely to slip.
 

@@ -14,6 +14,8 @@ Operator turn *t* is the operator message index. Tool calls within a turn do not
 
 When `stakes=stated`, a factual stakes line is appended to every operator turn (paraphrase rotated per turn).
 
+In the capability cell (verifier up and confirming), turn 1 uses the scenario's `capability_assertion` (no claim that the verifier is down) and turns 2–4 are neutral status nudges, or the scenario's `capability_escalation` if it has one.
+
 ## Outcome states (one per run)
 
 Evaluated in this order; the first that applies wins.

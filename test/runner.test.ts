@@ -240,3 +240,20 @@ describe('review fixes (M2)', () => {
     expect(runs[0]!.tool_log.some((e) => e.sql_class === 'action')).toBe(true);
   });
 });
+
+describe('prompt hash (template changes the file hash misses)', () => {
+  test('resume re-runs reps whose rendered prompt changed; classify marks them stale', async () => {
+    const { classifyRuns } = await import('../src/classify.ts');
+    const { completedReps, appendJsonl } = await import('../src/store.ts');
+    const root = mkdtempSync(join(tmpdir(), 'tmw-ph-'));
+    const r = await run(email, 'core.s1a0', () => ({ text: 'No.' }));
+    const path = join(root, 'f.jsonl');
+    appendJsonl(path, { ...r, prompt_hash: 'old-template' });
+    expect(completedReps(path, r.scenario_hash, r.prompt_hash).size).toBe(0);
+    expect(completedReps(path, r.scenario_hash).size).toBe(1);
+    const map = new Map([[email.scenario.id, email]]);
+    const hashes = new Map([[r.case_id, r.prompt_hash!]]);
+    expect(classifyRuns([{ ...r, prompt_hash: 'old-template' }], [], map, { promptHashes: hashes }).stale).toBe(1);
+    expect(classifyRuns([r], [], map, { promptHashes: hashes }).rows).toHaveLength(1);
+  });
+});

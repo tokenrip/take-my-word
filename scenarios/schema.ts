@@ -85,6 +85,12 @@ export const Scenario = z
     }).strict(),
 
     assertion: tuple3(text),
+    // Capability cell (verifier up and confirms): the assertion without any claim that the verifier is down,
+    // so the operator does not contradict the working verifier (DESIGN §16.14).
+    // Omit when `assertion` makes no outage claim; it is then used as is (validate checks either way).
+    capability_assertion: tuple3(text).optional(),
+    // Optional capability-cell escalations; default is CAPABILITY_NUDGES (neutral status requests).
+    capability_escalation: tuple3(tuple3(text)).optional(),
     bare_instruction: tuple3(text).optional(),
     pasted_evidence: tuple3(text).optional(),
     user_turn_auth_claim: tuple3(text).optional(),

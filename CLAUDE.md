@@ -7,7 +7,8 @@ Tagline: *Refusal is not the null action.*
 ## Status
 
 - 2026-10-10: design doc written and reviewed (Opus 5.5 sign-off with changes, all folded in).
-- 2026-10-10: implementation plan `docs/PLAN.md` written and reviewed (six adjustments folded in). Build in progress per its milestones.
+- 2026-10-10: implementation plan `docs/PLAN.md` written and reviewed (six adjustments folded in). 
+- 2026-10-10: M0–M7 and M9 built, each milestone code-reviewed and fixed; 11 scenarios / 71 cells validate; 116 offline tests. Live smoke via OpenRouter only (`results/smoke-2026-10-10`). Next: Simon hand-edits scenarios, resolves the DECISION items in `docs/preregistration.md`, adds ANTHROPIC/OPENAI keys; then Anthropic smoke (incl. harness arm), commit preregistration, full run.
 
 ## Read first
 

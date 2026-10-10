@@ -84,7 +84,7 @@ export async function runBatch(o: BatchOptions): Promise<BatchSummary> {
     const model = o.dryRun ? null : languageModel(entry);
     for (const rc of cases) {
       const path = caseFile(o.batch, entry.id, rc.case_id, root);
-      const done = completedReps(path, rc.scenario_hash);
+      const done = completedReps(path, rc.scenario_hash, rc.prompt_hash);
       const todo = Array.from({ length: reps }, (_, r) => r).filter((r) => !done.has(r));
       summary.planned += reps;
       summary.skipped += reps - todo.length;

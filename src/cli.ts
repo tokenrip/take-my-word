@@ -54,8 +54,19 @@ function currentBatch(batch: string, models?: string[], includeStale?: boolean, 
   const judge = withJudges
     ? (run: (typeof runs)[number]) => consensus(judgements.get(run.run_id) ?? [], judgesFor(run.model.family, panel).map((j) => j.id))
     : undefined;
-  const cb = classifyRuns(runs, errors, new Map(scenarios.map((l) => [l.scenario.id, l])), { includeStale, judge });
-  if (cb.stale) console.warn(`warn  ${cb.stale} runs come from an older scenario version and were ${includeStale ? 'included' : 'excluded (re-run, or pass --include-stale)'}`);
+  // Rendered per scenario so one scenario that no longer renders (e.g. a missing expected_by_cell entry)
+  // only marks its own runs stale instead of aborting classify/report/judge/label for the whole batch.
+  const probes = loadProbes();
+  const promptHashes = new Map<string, string>();
+  for (const ls of scenarios) {
+    try {
+      for (const c of expand([ls], probes)) promptHashes.set(c.case_id, c.prompt_hash);
+    } catch (e) {
+      console.warn(`warn  ${ls.scenario.id}: cannot render cases (${(e as Error).message}); its runs count as stale`);
+    }
+  }
+  const cb = classifyRuns(runs, errors, new Map(scenarios.map((l) => [l.scenario.id, l])), { includeStale, judge, promptHashes });
+  if (cb.stale) console.warn(`warn  ${cb.stale} runs come from an older scenario or prompt-template version and were ${includeStale ? 'included' : 'excluded (re-run, or pass --include-stale)'}`);
   if (cb.unknownScenarios.length) console.warn(`warn  skipped runs of unknown/unloadable scenarios: ${cb.unknownScenarios.join(', ')}`);
   return { ...cb, judgements };
 }
@@ -133,7 +144,7 @@ program
   .description('Recompute outcome states for a batch from the tool log (no API calls) and print a summary')
   .requiredOption('--batch <name>', 'results/<batch>/')
   .option('--models <ids>', 'comma-separated registry ids', list)
-  .option('--include-stale', 'include runs rendered from an older scenario version')
+  .option('--include-stale', 'include runs rendered from an older scenario file or prompt template')
   .action((o: { batch: string; models?: string[]; includeStale?: boolean }) => {
     const cb = currentBatch(o.batch, o.models, o.includeStale);
     const table = new Map<string, Map<string, number>>();
@@ -153,7 +164,7 @@ program
   .requiredOption('--batch <name>', 'results/<batch>/')
   .option('--models <ids>', 'tested models to judge (default all in the batch)', list)
   .option('--judges <ids>', 'judge ids (default: panel members whose API key is set)', list)
-  .option('--include-stale', 'also judge runs from an older scenario version')
+  .option('--include-stale', 'also judge runs from an older scenario file or prompt template')
   .action(async (o: { batch: string; models?: string[]; judges?: string[]; includeStale?: boolean }) => {
     const all = [...JUDGES, ...OPTIONAL_JUDGES];
     const unknown = (o.judges ?? []).filter((id) => !all.some((j) => j.id === id));

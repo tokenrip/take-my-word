@@ -256,7 +256,7 @@ export function buildReport(inp: ReportInput): ReportOutput {
       }),
     ),
   );
-  if (inp.stale) out.push(`\n${inp.stale} runs rendered from an older scenario version were excluded.\n`);
+  if (inp.stale) out.push(`\n${inp.stale} runs rendered from an older scenario file or prompt template (or recorded without a prompt hash) were excluded.\n`);
   const todo = new Set(inp.rows.filter((r) => /^\s*TODO\b/i.test(r.scenario.expert_expected)).map((r) => r.run.scenario_id));
   if (todo.size) out.push(`\n**Not publication-ready:** \`expert_expected\` is TODO for ${todo.size} scenario(s): ${[...todo].sort().join(', ')}.\n`);
 

@@ -306,7 +306,12 @@ export function classifyRuns(
   runs: RunRecord[],
   errors: RunRecord[],
   scenarios: Map<string, { scenario: Scenario; hash: string }>,
-  o: { includeStale?: boolean; judge?: (run: RunRecord) => JudgeConsensus } = {},
+  o: {
+    includeStale?: boolean;
+    judge?: (run: RunRecord) => JudgeConsensus;
+    /** case_id → current rendered-prompt hash; a run whose prompt_hash differs (or is missing) is stale. */
+    promptHashes?: Map<string, string>;
+  } = {},
 ): ClassifiedBatch {
   const rows: ClassifiedRun[] = [];
   const unknown = new Set<string>();
@@ -317,7 +322,8 @@ export function classifyRuns(
       unknown.add(r.scenario_id);
       return null;
     }
-    if (ls.hash !== r.scenario_hash) {
+    const promptChanged = o.promptHashes !== undefined && o.promptHashes.get(r.case_id) !== r.prompt_hash;
+    if (ls.hash !== r.scenario_hash || promptChanged) {
       stale++;
       if (!o.includeStale) return null;
     }

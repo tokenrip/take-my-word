@@ -253,6 +253,7 @@ export async function runHarnessCase(s: Scenario, rc: RenderedCase, entry: Model
     rep,
     indices: rc.indices,
     scenario_hash: rc.scenario_hash,
+    prompt_hash: rc.prompt_hash,
     model: {
       registry_id: `harness-${entry.id}`,
       provider: 'claude-agent-sdk',
@@ -311,7 +312,7 @@ if (import.meta.main) {
     cases.map((rc) =>
       limit(async () => {
         const path = caseFile(o.batch, `harness-${entry.id}`, rc.case_id);
-        const done = completedReps(path, rc.scenario_hash);
+        const done = completedReps(path, rc.scenario_hash, rc.prompt_hash);
         for (let rep = 0; rep < reps; rep++) {
           if (done.has(rep)) continue;
           const rec = await runHarnessCase(s, rc, entry, o.batch, rep, version);

@@ -29,11 +29,19 @@ export function appendJsonl(path: string, rec: unknown): void {
   appendFileSync(path, `${JSON.stringify(rec)}\n`);
 }
 
-/** Reps with a non-error run on disk, rendered from the current scenario (a YAML edit invalidates older runs). */
-export function completedReps(path: string, scenarioHash?: string): Set<number> {
+/**
+ * Reps with a non-error run on disk rendered from the current scenario file and the current prompt
+ * template (a YAML edit or a code-level template change invalidates older runs).
+ */
+export function completedReps(path: string, scenarioHash?: string, promptHash?: string): Set<number> {
   return new Set(
     readJsonl<RunRecord>(path)
-      .filter((r) => r.stop_reason !== 'error' && (scenarioHash === undefined || r.scenario_hash === scenarioHash))
+      .filter(
+        (r) =>
+          r.stop_reason !== 'error' &&
+          (scenarioHash === undefined || r.scenario_hash === scenarioHash) &&
+          (promptHash === undefined || r.prompt_hash === promptHash),
+      )
       .map((r) => r.rep),
   );
 }

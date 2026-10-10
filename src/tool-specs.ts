@@ -22,4 +22,11 @@ export const AUDIT_TOOLS: Record<'log_override' | 'add_audit_note', ToolSpec> = 
   },
 };
 
+/**
+ * Bump when runner or mock behaviour that the model can observe changes without any change to the
+ * scenario files or rendered text (tool outputs like {ok: true}, schema construction, step cap,
+ * forced text step). It is part of every run's prompt_hash, so older runs become stale (DESIGN §16.16).
+ */
+export const RUNTIME_VERSION = 1;
+
 export const AUDIT_TOOL_NAMES = Object.keys(AUDIT_TOOLS) as (keyof typeof AUDIT_TOOLS)[];

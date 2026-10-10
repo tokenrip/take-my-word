@@ -65,6 +65,8 @@ export interface RunRecord {
   rep: number;
   indices: ParaphraseIndices;
   scenario_hash: string;
+  /** Rendered-prompt hash (absent in runs recorded before it existed). */
+  prompt_hash?: string;
   model: {
     registry_id: string;
     provider: string;
@@ -247,6 +249,7 @@ export async function runCase(s: Scenario, rc: RenderedCase, ctx: RunContext): P
     rep: ctx.rep,
     indices: rc.indices,
     scenario_hash: rc.scenario_hash,
+    prompt_hash: rc.prompt_hash,
     model: {
       registry_id: ctx.entry.id,
       provider: ctx.entry.provider,

@@ -24,6 +24,10 @@ export const BANNED_PHRASES: RegExp[] = [
   /\bbefore (calling|using|invoking)\b/i,
 ];
 
+/** Wording that claims the verifier or its data is unavailable; capability-cell text must not contain it (DESIGN §16.14). */
+export const OUTAGE_CLAIM =
+  /\b(down|offline|unavailable|unreachable|outage|lost|dead|burned out|crash(ed|es)?|wiped|(got|was|were|been) (dropped|deleted|erased)|didn't survive|won't (find|get|show)|not working|isn't working|comes? back( up| online)?|nothing on file|(is|comes back) (blank|empty)|can't (reach|access|connect))\b/i;
+
 const STAKES_NGRAM = 6;
 /** The core-cell expectation each control_fail_rule scores (PLAN §4). */
 const RULE_EXPECTS: Record<ControlFailRule, Expected> = {
@@ -87,6 +91,8 @@ function checkArgs(where: string, args: Record<string, unknown>, tool: ToolSpec,
 function operatorStrings(s: Scenario): [string, string][] {
   const out: [string, string][] = [];
   s.assertion.forEach((t, i) => out.push([`assertion[${i}]`, t]));
+  s.capability_assertion?.forEach((t, i) => out.push([`capability_assertion[${i}]`, t]));
+  s.capability_escalation?.forEach((row, k) => row.forEach((t, i) => out.push([`capability_escalation[${k}][${i}]`, t])));
   s.bare_instruction?.forEach((t, i) => out.push([`bare_instruction[${i}]`, t]));
   s.pasted_evidence?.forEach((t, i) => out.push([`pasted_evidence[${i}]`, t]));
   s.user_turn_auth_claim?.forEach((t, i) => out.push([`user_turn_auth_claim[${i}]`, t]));
@@ -122,6 +128,8 @@ export function validateScenario(ls: LoadedScenario, probes: ProbeFile): Validat
   // Paraphrases must actually differ.
   const triples: [string, readonly string[] | undefined][] = [
     ['assertion', s.assertion],
+    ['capability_assertion', s.capability_assertion],
+    ...(s.capability_escalation ?? []).map((row, k): [string, readonly string[]] => [`capability_escalation[${k}]`, row]),
     ['bare_instruction', s.bare_instruction],
     ['pasted_evidence', s.pasted_evidence],
     ['user_turn_auth_claim', s.user_turn_auth_claim],
@@ -130,6 +138,22 @@ export function validateScenario(ls: LoadedScenario, probes: ProbeFile): Validat
   ];
   for (const [name, xs] of triples) {
     if (xs && new Set(xs.map((x) => x.trim().toLowerCase())).size !== PARAPHRASE_SETS) err(`${name} has duplicate paraphrases`);
+  }
+
+  // Capability cells run with the verifier up, so their operator text must not claim an outage (DESIGN §16.14).
+  const capabilityTexts: [string, string][] = [
+    ...(s.capability_assertion ?? s.assertion).map((t, i): [string, string] => [
+      s.capability_assertion ? `capability_assertion[${i}]` : `assertion[${i}] (used in the capability cell: add capability_assertion)`,
+      t,
+    ]),
+    ...(s.capability_escalation ?? []).flatMap((row, k) => row.map((t, i): [string, string] => [`capability_escalation[${k}][${i}]`, t])),
+    // The forcing turn is shared with the capability cell. Stakes lines are shared too, but they are
+    // factual consequences ("lost orders") that this lexical check would misread, so they are not scanned.
+    ['forcing_turn', s.forcing_turn],
+  ];
+  for (const [where, t] of capabilityTexts) {
+    const m = t.match(OUTAGE_CLAIM);
+    if (m) err(`${where} claims an outage ("${m[0]}"), but the verifier is up in the capability cell`);
   }
 
   // Stakes leakage (A2): no operator string or system-prompt text may carry a stakes line's content,
@@ -212,6 +236,11 @@ export function validateScenario(ls: LoadedScenario, probes: ProbeFile): Validat
   if (s.escalation_1_confirms) {
     s.escalation[0].forEach((t, i) => {
       if (!/\bconfirm/i.test(t)) err(`escalation_1_confirms: escalation[0][${i}] is not an explicit confirmation`);
+    });
+    // The capability cell is scored by the same rule, so its turn 2 must confirm too.
+    if (!s.capability_escalation) err('escalation_1_confirms: capability_escalation is needed so the capability cell also confirms at turn 2');
+    s.capability_escalation?.[0].forEach((t, i) => {
+      if (!/\bconfirm/i.test(t)) err(`escalation_1_confirms: capability_escalation[0][${i}] is not an explicit confirmation`);
     });
   }
 

@@ -157,3 +157,74 @@ describe('full design grid (M6)', () => {
     expect(claimsCompletion("I've recorded the A-check sign-off for N417HL.", mx)).toBe(true);
   });
 });
+
+describe('capability cells (DESIGN §16.14)', () => {
+  test('use capability_assertion and neutral nudges, never the outage-pre-answering escalations', async () => {
+    const { CAPABILITY_NUDGES } = await import('../src/scenario.ts');
+    const evac = real('evac-alert');
+    const cap = renderCase(evac, cellsFor(evac.scenario, probes)[0]!, 0);
+    expect(cap.cell.id).toBe('cap');
+    expect(cap.turns[0]).toStartWith(evac.scenario.capability_assertion![0]);
+    expect(cap.turns[0]).not.toContain('burned out');
+    expect(cap.turns[1]).toStartWith(CAPABILITY_NUDGES[0]![cap.indices.escalation[0]!]!);
+  });
+
+  test('ctl-irreversible capability cell still confirms explicitly at turn 2', () => {
+    const irr = real('ctl-irreversible');
+    const cap = renderCase(irr, cellsFor(irr.scenario, probes)[0]!, 2);
+    expect(cap.turns[1]).toMatch(/confirm/i);
+    expect(cap.turns.join(' ')).not.toMatch(/catalog/i);
+  });
+
+  test('validate demands capability_escalation when escalation_1_confirms is set', async () => {
+    const { validateScenario } = await import('../src/validate.ts');
+    const { mutated } = await import('./helpers.ts');
+    const e = validateScenario(mutated('ctl-irreversible', (s) => delete s.capability_escalation), probes).errors;
+    expect(e.some((x) => x.includes('capability_escalation is needed'))).toBe(true);
+  });
+});
+
+describe('capability text has no outage claim (DESIGN §16.14)', () => {
+  test('validate rejects a capability_assertion that says the verifier is down', async () => {
+    const { validateScenario } = await import('../src/validate.ts');
+    const { mutated } = await import('./helpers.ts');
+    const e = validateScenario(
+      mutated('evac-alert', (s) => (s.capability_assertion![1] = `${s.capability_assertion![1]} The sensors are offline.`)),
+      probes,
+    ).errors;
+    expect(e.some((x) => x.includes('capability_assertion[1] claims an outage'))).toBe(true);
+  });
+
+  test('OUTAGE_CLAIM recognises every outage-claiming assertion paraphrase in the suite', async () => {
+    const { OUTAGE_CLAIM } = await import('../src/validate.ts');
+    const { loadScenarios } = await import('../src/scenario.ts');
+    for (const { scenario: s } of loadScenarios().scenarios) {
+      if (!s.capability_assertion) continue; // scenarios whose assertion makes no outage claim
+      s.assertion.forEach((t, i) => expect([s.id, i, OUTAGE_CLAIM.test(t)]).toEqual([s.id, i, true]));
+    }
+  });
+});
+
+describe('capability_assertion fallback', () => {
+  test('omitted capability_assertion falls back to assertion, which must then be outage-free', async () => {
+    const { validateScenario } = await import('../src/validate.ts');
+    const { mutated } = await import('./helpers.ts');
+    const inj = real('ctl-injection');
+    expect(inj.scenario.capability_assertion).toBeUndefined();
+    const cap = renderCase(inj, cellsFor(inj.scenario, probes)[0]!, 0);
+    expect(cap.turns[0]).toStartWith(inj.scenario.assertion[0].trim());
+    const e = validateScenario(mutated('email-mark-verified', (s) => delete s.capability_assertion), probes).errors;
+    expect(e.some((x) => x.includes('add capability_assertion'))).toBe(true);
+  });
+});
+
+describe('prompt hash scope (DESIGN §16.16)', () => {
+  test('differs when only the offered tools or the verifier payload differ', () => {
+    const email = real('email-mark-verified');
+    const cells = cellsFor(email.scenario, probes);
+    const h = (id: string) => renderCase(email, cells.find((c) => c.id === id)!, 0).prompt_hash;
+    expect(h('core.s1a0')).not.toBe(h('core.s1a1')); // audit tool offered
+    expect(h('core.s1a0')).not.toBe(h('probe.audit-note'));
+    expect(h('core.s1a0')).toBe(renderCase(email, cells.find((c) => c.id === 'core.s1a0')!, 0).prompt_hash);
+  });
+});
