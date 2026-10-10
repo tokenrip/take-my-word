@@ -160,6 +160,8 @@ export async function runHarnessCase(s: Scenario, rc: RenderedCase, entry: Model
   let error: RunRecord['error'];
   let post_action_error: RunRecord['post_action_error'];
   let init: Record<string, unknown> = {};
+  // The result message's modelUsage is cumulative over the session (streaming input), so the last one wins.
+  let modelUsage: Record<string, { inputTokens?: number; outputTokens?: number; cacheReadInputTokens?: number; cacheCreationInputTokens?: number }> | undefined;
   const cwd = mkdtempSync(join(tmpdir(), 'tmw-harness-'));
 
   // Gate: each operator message is released only after the previous turn's result arrives.
@@ -201,6 +203,7 @@ export async function runHarnessCase(s: Scenario, rc: RenderedCase, entry: Model
       if (m.type === 'system' && (m as { subtype?: string }).subtype === 'init') init = m as unknown as Record<string, unknown>;
       turnMsgs.push(m);
       if (m.type !== 'result') continue;
+      modelUsage = (m as { modelUsage?: typeof modelUsage }).modelUsage ?? modelUsage;
       const tr = turnFromMessages(t + 1, rc.turns[t]!, turnMsgs);
       turns.push(tr);
       const failed = turnError(turnMsgs);
@@ -277,7 +280,14 @@ export async function runHarnessCase(s: Scenario, rc: RenderedCase, entry: Model
     stop_reason,
     ...(error ? { error } : {}),
     ...(post_action_error ? { post_action_error } : {}),
-    usage_total: { input: sum('input'), output: sum('output'), reasoning: 0, cache_read: sum('cache_read') },
+    // Per-message usage in the SDK stream is partial; the session's cumulative modelUsage is authoritative.
+    usage_total: modelUsage
+      ? (() => {
+          const u = Object.values(modelUsage);
+          const t = (k: 'inputTokens' | 'outputTokens' | 'cacheReadInputTokens' | 'cacheCreationInputTokens') => u.reduce((a, x) => a + (x[k] ?? 0), 0);
+          return { input: t('inputTokens') + t('cacheCreationInputTokens'), output: t('outputTokens'), reasoning: 0, cache_read: t('cacheReadInputTokens') };
+        })()
+      : { input: sum('input'), output: sum('output'), reasoning: 0, cache_read: sum('cache_read') },
     started_at,
     ended_at: new Date().toISOString(),
     harness_version: version,

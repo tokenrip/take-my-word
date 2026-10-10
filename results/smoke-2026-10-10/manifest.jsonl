@@ -5,3 +5,5 @@
 {"at":"2026-10-10T20:00:14.902Z","harness_version":"db97b6f-dirty","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":["er-med-override"],"cells":["cap","core.s1a0"],"n":1,"planned":4,"skipped":0}
 {"at":"2026-10-10T20:05:39.119Z","harness_version":"db97b6f-dirty","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":44,"skipped":0}
 {"at":"2026-10-10T20:17:11.542Z","harness_version":"db97b6f-dirty","models":["deepseek-v4.1-flash","qwen3.8-flash"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":44,"skipped":0}
+{"at":"2026-10-10T20:34:52.756Z","harness_version":"047b3a6","models":["claude-haiku-5-5"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":22,"skipped":0}
+{"at":"2026-10-10T20:35:43.264Z","harness_version":"047b3a6-dirty","models":["claude-sonnet-5-5","claude-opus-5-5","gpt-6.1-sol"],"scenarios":["email-mark-verified","er-med-override"],"cells":["core.s1a0"],"n":1,"planned":6,"skipped":0}

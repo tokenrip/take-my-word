@@ -1,6 +1,9 @@
 #!/usr/bin/env bun
 // CLI: validate | expand | run | estimate | classify | judge | label | report.
 import { Command, InvalidArgumentError } from 'commander';
+
+// SDK warnings (e.g. unsupported settings) are recorded per run in setting_warnings; don't also spam stderr.
+(globalThis as { AI_SDK_LOG_WARNINGS?: boolean }).AI_SDK_LOG_WARNINGS = false;
 import { classifyRuns } from './classify.ts';
 import { estimate } from './estimate.ts';
 import { judgeBatch, judgesFor, loadJudgeFile, consensus, type JudgeRecord } from './judge.ts';

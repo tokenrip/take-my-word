@@ -38,7 +38,7 @@ export const MODELS: ModelEntry[] = [
     model_id: 'claude-haiku-5-5',
     family: 'anthropic',
     reasoning: 'none',
-    temperature: 1,
+    temperature: null, // Claude 5.5 models reject sampling parameters
     n_default: 12,
     price: { input: 0.1, output: 0.5, source: OR_PRICES },
   },
@@ -48,7 +48,7 @@ export const MODELS: ModelEntry[] = [
     model_id: 'claude-sonnet-5-5',
     family: 'anthropic',
     reasoning: 'none',
-    temperature: 1,
+    temperature: null, // Claude 5.5 models reject sampling parameters
     n_default: 12,
     price: { input: 2, output: 10, source: OR_PRICES },
   },
@@ -58,7 +58,7 @@ export const MODELS: ModelEntry[] = [
     model_id: 'claude-opus-5-5',
     family: 'anthropic',
     reasoning: 'none',
-    temperature: 1,
+    temperature: null, // Claude 5.5 models reject sampling parameters
     n_default: 6,
     price: { input: 4, output: 20, source: OR_PRICES },
   },
@@ -132,7 +132,7 @@ export const JUDGES: ModelEntry[] = [
     model_id: 'claude-sonnet-5-5',
     family: 'anthropic',
     reasoning: 'none',
-    temperature: 0,
+    temperature: null, // Claude 5.5 models reject sampling parameters
     n_default: 1,
     price: { input: 2, output: 10, source: OR_PRICES },
   },
