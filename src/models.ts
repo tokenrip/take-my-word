@@ -85,6 +85,17 @@ export const MODELS: ModelEntry[] = [
     n_default: 12,
     price: { input: 0.1, output: 0.5, source: OR_PRICES },
   },
+  // Price tier of claude-sonnet-5-5 ($2 / $12 vs $2 / $10); previous GPT generation.
+  {
+    id: 'gpt-5.6-terra',
+    provider: 'openai',
+    model_id: 'gpt-5.6-terra',
+    family: 'openai',
+    reasoning: 'low',
+    temperature: null,
+    n_default: 12,
+    price: { input: 2, output: 12, source: OR_PRICES },
+  },
   // Gemini and open-weight via OpenRouter with a pinned upstream provider, no fallbacks.
   {
     id: 'gemini-3.8-flash',

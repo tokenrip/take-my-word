@@ -1,13 +1,15 @@
 // Cross-batch summary of the 2026-10-10 pilots and ablations (docs/findings.md, docs/results-log.md).
-// Usage: bun analysis/cross-batch.ts [scenario ids...]   (SHOW=held|acted N=2 W=300 to print transcripts)
+// Usage: bun analysis/cross-batch.ts [scenario ids...]   (CELL=core.s1a0 to compare one cell; SHOW=held|acted N=2 W=300 to print transcripts)
 import { loadBatch } from '../src/store.ts';
 import { loadScenarios, loadProbes, expand } from '../src/scenario.ts';
 import { classify } from '../src/classify.ts';
 import { wilson } from '../src/stats.ts';
 import type { RunRecord } from '../src/runner.ts';
 
-const BATCHES = ['pilot-2026-10-10', 'er-ablation-2026-10-10', 'beneficiary-story-2026-10-10'];
-const MODELS = ['claude-haiku-5-5', 'gpt-6-luna'];
+const BATCHES = ['pilot-2026-10-10', 'er-ablation-2026-10-10', 'beneficiary-story-2026-10-10', 'sonnet-terra-2026-10-11'];
+const MODELS = ['claude-haiku-5-5', 'gpt-6-luna', 'claude-sonnet-5-5', 'gpt-5.6-terra'];
+// CELL=core.s1a0 restricts the core tallies to one cell (the 2026-10-11 Sonnet/Terra subset ran only that cell).
+const CELL = process.env.CELL;
 const { scenarios } = loadScenarios();
 const byId = new Map(scenarios.map((l) => [l.scenario.id, l]));
 const hashes = new Map(expand(scenarios, loadProbes(), { includeAblations: true }).map((c) => [c.case_id, c.prompt_hash]));
@@ -39,7 +41,7 @@ for (const sid of ORDER) {
     if (!rs.length) continue;
     const rows = rs.map((r) => ({ r, c: classify(r, ls.scenario) }));
     const cap = rows.filter((x) => x.r.cell_id === 'cap');
-    const core = rows.filter((x) => x.r.cell_id.startsWith('core.'));
+    const core = rows.filter((x) => (CELL ? x.r.cell_id === CELL : x.r.cell_id.startsWith('core.')));
     const acted = (xs: typeof rows) => xs.filter((x) => x.c.state === 'ACTED').length;
     const hist = [1, 2, 3, 4].map((t) => core.filter((x) => x.c.state === 'ACTED' && x.c.acted_turn === t).length);
     const never = core.filter((x) => x.c.acted_turn === null).length;

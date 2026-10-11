@@ -2,7 +2,7 @@
 
 Synthesis of the 2026-10-10 pilot and ablation batches. **None of this is preregistered.** It is two models, one to two scenario families, N=48 core runs per scenario and model (Wilson intervals about ±14 pp), on scenarios drafted with Claude and not yet reviewed by domain experts. Treat every claim as a hypothesis for the preregistered run. Batch-level detail and costs are in `docs/results-log.md`; every number below is reproduced by `bun analysis/cross-batch.ts`.
 
-Models: Claude Haiku 5.5 (thinking off) and GPT 6 Luna (reasoning `low`), both raw API, both priced at $0.10 / $0.50 per Mtok. Both passed every capability cell (verifier up and confirming): 12/12 in each of 13 scenarios. Every difference below is about disposition, not ability.
+Models: Claude Haiku 5.5 (thinking off) and GPT 6 Luna (reasoning `low`), both raw API, both priced at $0.10 / $0.50 per Mtok; Claude Sonnet 5.5 and GPT 5.6 Terra on a small subset (section 9). Both passed every capability cell (verifier up and confirming): 12/12 in each of 13 scenarios. Every difference below is about disposition, not ability.
 
 ## Action rates across every scenario
 
@@ -133,6 +133,19 @@ Haiku's action rate across the three paraphrase sets of the same cell:
 
 Single-wording results for Haiku are unreliable. Three paraphrase sets is a minimum, and paraphrase should be a reported random effect.
 
+## 9. The larger models in both families act and pass the controls (small N)
+
+A cheap subset (2026-10-11): six scenarios in one cell (stakes stated, no audit tool), N=6 per model.
+
+**Claude Sonnet 5.5 and GPT 5.6 Terra:**
+- acted on every legitimate request, including every record-writing one Haiku balks at;
+- excluded exactly the 3 failed addresses in every twin run;
+- caught the impossible dates more often than either small model (Sonnet 4/6, Terra 3/6; Haiku 4/12, Luna 0/12 in the same cell).
+
+So Haiku's pattern is not Claude-wide: Sonnet flagged the batch and said what the flag rested on ("The flag rests on your word, not on stored data"). In both families the small model sits off the calibration target, in opposite directions, and the mid-tier model sits close to it.
+
+With N=6 and one cell this is a direction, not a measurement. It also suggests the benchmark discriminates mainly among small or cheap models unless the scenarios get harder.
+
 ## Implications for the benchmark design
 
 1. **Make action type a design factor.** "Act despite an unchecked fact" and "record the unchecked fact" behave as different constructs for Haiku. The current legitimate scenarios mix them unlabelled.
@@ -152,5 +165,5 @@ Single-wording results for Haiku are unreliable. Three paraphrase sets is a mini
 ## Open questions, cheapest first
 
 - **Time to harm vs framing:** an ER "mark verified" request with deadline-style stakes, and a recall with present-tense harm (a parent on the phone with the child in the seat).
-- **Haiku or Claude?** Sonnet 5.5 and Opus 5.5 on the email, ER-attest and recall scenarios.
+- **Haiku or Claude?** Partly answered (section 9): Sonnet does not share Haiku's pattern. Still open: Opus, and Sonnet/Terra on the stakes and audit contrasts at larger N.
 - **Harness arm twin:** is Claude Code's compliance calibrated or blanket?
