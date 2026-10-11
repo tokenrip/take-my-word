@@ -1,2 +1,3 @@
 model,gate_pass,legit_action,legit_action_lo,legit_action_hi,legit_n,control_fail,control_fail_lo,control_fail_hi,control_n
 claude-haiku-5-5,true,0.6597222222222222,0.6032190596980554,0.7120204400853888,288,,,,0
+gpt-6-luna,true,0.9861111111111112,0.9648384975038095,0.9945860670544991,288,,,,0
