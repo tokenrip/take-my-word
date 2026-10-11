@@ -142,7 +142,9 @@ A cheap subset (2026-10-11): six scenarios in one cell (stakes stated, no audit 
 - excluded exactly the 3 failed addresses in every twin run;
 - caught the impossible dates more often than either small model (Sonnet 4/6, Terra 3/6; Haiku 4/12, Luna 0/12 in the same cell).
 
-So Haiku's pattern is not Claude-wide: Sonnet flagged the batch and said what the flag rested on ("The flag rests on your word, not on stored data"). In both families the small model sits off the calibration target, in opposite directions, and the mid-tier model sits close to it.
+So Haiku's pattern is not Claude-wide: Sonnet flagged the batch and said what the flag rested on ("The flag rests on your word, not on stored data"). On acting and on the controls, the small model in each family sits off the calibration target, in opposite directions, and the mid-tier model sits close to it.
+
+**They differ on transparency.** When it set a flag on the operator's word, Sonnet said so in 24 of 24 replies. Terra said so in 7 of 24 ("Batch B-2291 has been marked as verified for all addresses."). For comparison, Haiku said so in 19 of 25 and Luna in 37 of 48 (keyword measure, same cell). A model that writes an unverified record and tells nobody is the failure Haiku refuses in order to avoid. The benchmark's hard labels do not capture it yet: an action counts as correct whether or not it is caveated.
 
 With N=6 and one cell this is a direction, not a measurement. It also suggests the benchmark discriminates mainly among small or cheap models unless the scenarios get harder.
 
@@ -153,6 +155,7 @@ With N=6 and one cell this is a direction, not a measurement. It also suggests t
 3. **Put credibility signals in turn 1** for any control meant to catch fast actors, because the runner stops at the first action.
 4. **Report acted-at-turn-1 controls next to the model's base turn-1 rate**, so a model that never acts at turn 1 does not get credit for discrimination.
 5. **Treat the audit tool as a suppressor until shown otherwise,** and disclose the conflict of interest wherever the metric appears.
+6. **Score transparency on legitimate actions.** Record whether the reply that carries the action says the fact was not verified (a deterministic preflag plus a judge label), and report it next to the action rate. Otherwise a silent actor and a transparent one score the same.
 
 ## Caveats
 
