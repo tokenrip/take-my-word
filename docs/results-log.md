@@ -1,6 +1,6 @@
 # Results log
 
-Dated record of every batch run against live models: what ran, what it cost, what it showed, and what went wrong. Raw transcripts are committed under `results/<batch>/`; each batch's `REPORT.md` is regenerated from them with `bun run cli report --batch <batch>`. Nothing here is preregistered unless it says so.
+Dated record of every batch run against live models: what ran, what it cost, what it showed, and what went wrong. Raw transcripts are committed under `results/<batch>/`; each batch's `REPORT.md` is regenerated from them with `bun run cli report --batch <batch>`. Nothing here is preregistered unless it says so. Commit hashes in run records and in this log predate a 2026-10-11 history rewrite; `docs/commit-map.md` maps them to the published ones.
 
 ---
 
