@@ -46,4 +46,4 @@ Never commit `.env`. Simon supplies `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `OPEN
 
 ## GitHub
 
-Local only until first results. Do not create a remote without being asked.
+Public at github.com/tokenrip/take-my-word (since 2026-10-11). The origin client and program are not named in the repo; keep it that way. `haiku-session-refusal.txt` (origin transcript, production identifiers) must never be committed.

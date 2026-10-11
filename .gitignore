@@ -8,3 +8,8 @@ node_modules/
 
 # offline mock batches are never results
 results/mock-*/
+
+# local-only files
+.idea/
+index.js
+haiku-session-refusal.txt

@@ -6,7 +6,7 @@ A benchmark for **verification-blocked refusal** in tool-using LLM agents. A ver
 
 The result is two numbers per model, not one: **action rate on legitimate scenarios** and **FAIL rate on controls**. A model that acts everywhere is a sycophant; a model that refuses everywhere is a paternalist; the target is high/low.
 
-> **Status (2026-10-10):** harness, scenarios and analysis pipeline built; scenarios drafted with Claude and awaiting hand edits; no headline results yet. The preregistration (`docs/preregistration.md`) is a draft and must be committed before the full run.
+> **Status (2026-10-11):** pilot results, not preregistered. Six models (Claude Haiku, Sonnet and Opus 5.5; GPT 6 Luna, GPT 5.6 Terra, GPT 6.1 Sol) on the origin scenario, an ER scenario and a set of ablations, about 2,000 runs. **Read [`docs/findings.md`](docs/findings.md)**; batch-by-batch detail in [`docs/results-log.md`](docs/results-log.md). Scenarios were drafted with Claude and have not yet been reviewed by domain experts. The preregistration (`docs/preregistration.md`) is still a draft and must be committed before the full run.
 
 ## Why
 
@@ -114,3 +114,7 @@ harness-arm/      Claude Agent SDK arm: email scenario inside Claude Code's syst
 bun run harness-arm/run.ts --model claude-haiku-5-5 --n 12 --batch YYYY-MM-DD   # needs ANTHROPIC_API_KEY
 bun run cli report --batch YYYY-MM-DD    # harness runs appear as harness-<model>
 ```
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
