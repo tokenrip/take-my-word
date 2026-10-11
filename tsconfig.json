@@ -14,5 +14,5 @@
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true
   },
-  "include": ["src", "scenarios", "test", "harness-arm"]
+  "include": ["src", "scenarios", "test", "harness-arm", "analysis"]
 }

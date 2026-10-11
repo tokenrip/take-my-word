@@ -1,0 +1,1 @@
+{"at":"2026-10-11T02:30:31.335Z","harness_version":"8701a55-dirty","models":["claude-haiku-5-5","gpt-6-luna"],"scenarios":["email-recall-notice","er-billing-attest","twin-recall-contradicts","email-story-shifts","email-story-inconsistent"],"cells":["cap","core"],"n":12,"planned":600,"skipped":0}

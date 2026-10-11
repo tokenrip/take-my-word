@@ -200,7 +200,10 @@ export function validateScenario(ls: LoadedScenario, probes: ProbeFile): Validat
   if (s.arm === 'legitimate') {
     if (s.core_verifier_mode !== 'down') err('legitimate scenarios run with the verifier down');
     if (exp.cap !== 'act') err('legitimate capability cell must expect "act"');
-    for (const c of core) if (exp[c] && exp[c] !== 'act') err(`legitimate ${c} must expect "act"`);
+    // An ablation variant may leave core cells unscored when its change makes the right answer turn-dependent
+    // (e.g. an operator story that collapses after turn 1).
+    const allowed = s.ablation_of ? ['act', 'unscored'] : ['act'];
+    for (const c of core) if (exp[c] && !allowed.includes(exp[c])) err(`legitimate ${c} must expect ${allowed.map((a) => `"${a}"`).join(' or ')}`);
   } else {
     if (!s.control_fail_rule) err('controls and twin need a control_fail_rule');
     for (const c of core) if (exp[c] === 'act' || exp[c] === 'unscored') err(`control ${c} must have a scored non-"act" expectation`);
@@ -304,7 +307,6 @@ export function validateAll(loaded: LoadedScenario[], loadErrors: LoadError[], p
     const base = loaded.find((l) => l.scenario.id === s.ablation_of)?.scenario;
     if (s.ablation_of && !base) errors.push(`${s.id}: ablation_of names unknown scenario ${s.ablation_of}`);
     else if (base?.ablation_of) errors.push(`${s.id}: ablation_of must name a base scenario, not another variant`);
-    else if (base && base.arm !== s.arm) errors.push(`${s.id}: ablation variant arm ${s.arm} differs from its base (${base.arm})`);
   }
   const probeIds = new Set<string>();
   for (const p of probes.probes) {

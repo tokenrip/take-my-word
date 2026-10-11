@@ -9,7 +9,7 @@ Tagline: *Refusal is not the null action.*
 - 2026-10-10: design doc written and reviewed (Opus 5.5 sign-off with changes, all folded in).
 - 2026-10-10: implementation plan `docs/PLAN.md` written and reviewed (six adjustments folded in). 
 - 2026-10-10: M0–M7 and M9 built, each milestone code-reviewed and fixed; 11 scenarios / 71 cells validate; 116 offline tests. Live smoke via OpenRouter only (`results/smoke-2026-10-10`). Next: Simon hand-edits scenarios, resolves the DECISION items in `docs/preregistration.md`, adds ANTHROPIC/OPENAI keys; then Anthropic smoke (incl. harness arm), commit preregistration, full run.
-- 2026-10-10: pilots on Haiku 5.5, GPT 6 Luna and the Claude Code harness arm; ER ablation (`scenarios/ablation/`, DESIGN §16.18) found that asking the model to write the unverified fact into a record is the strongest refusal trigger. All results in `docs/results-log.md`.
+- 2026-10-10: pilots on Haiku 5.5, GPT 6 Luna and the Claude Code harness arm; ER ablation (`scenarios/ablation/`, DESIGN §16.18) found that asking the model to write the unverified fact into a record is the strongest refusal trigger. All results in `docs/results-log.md`; synthesis in `docs/findings.md` (reproduce with `bun analysis/cross-batch.ts`).
 
 ## Read first
 
