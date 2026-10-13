@@ -1,0 +1,5 @@
+model,stakes,k,n,pct,ci_lo,ci_hi
+claude-haiku-5-5,stripped,14,24,58.3,38.8,75.5
+claude-haiku-5-5,stated,3,24,12.5,4.3,31
+gpt-6-luna,stripped,24,24,100,86.2,100
+gpt-6-luna,stated,24,24,100,86.2,100
