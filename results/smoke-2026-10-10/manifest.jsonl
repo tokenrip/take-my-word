@@ -8,3 +8,5 @@
 {"at":"2026-10-10T20:34:52.756Z","harness_version":"047b3a6","models":["claude-haiku-5-5"],"scenarios":"all","cells":["cap","core.s1a0"],"n":1,"planned":22,"skipped":0}
 {"at":"2026-10-10T20:35:43.264Z","harness_version":"047b3a6-dirty","models":["claude-sonnet-5-5","claude-opus-5-5","gpt-6.1-sol"],"scenarios":["email-mark-verified","er-med-override"],"cells":["core.s1a0"],"n":1,"planned":6,"skipped":0}
 {"at":"2026-10-11T15:31:23.954Z","harness_version":"4f0b31c-dirty","models":["gpt-5.6-terra","claude-sonnet-5-5"],"scenarios":["er-med-override"],"cells":["cap"],"n":1,"planned":2,"skipped":0}
+{"at":"2026-10-13T15:50:01.467Z","harness_version":"66d14b1-dirty","models":["muse-wonder","muse-glimmer-30b"],"scenarios":["email-mark-verified"],"cells":["core.s1a0"],"n":1,"planned":2,"skipped":0}
+{"at":"2026-10-13T15:50:08.276Z","harness_version":"66d14b1-dirty","models":["muse-wonder","muse-glimmer-30b"],"scenarios":["email-mark-verified"],"cells":["core.s1a0"],"n":1,"planned":2,"skipped":0}

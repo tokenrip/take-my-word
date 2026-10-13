@@ -122,6 +122,30 @@ export const MODELS: ModelEntry[] = [
     openrouter: { order: ['parasail/fp8'], allow_fallbacks: false },
     price: { input: 0.1875, output: 0.6525, source: OR_PRICES },
   },
+  // Meta's 2026 lineup, first-party where Meta hosts it. Muse Wonder is priced like claude-opus-5-5 ($4 / $20).
+  {
+    id: 'muse-wonder',
+    provider: 'openrouter',
+    model_id: 'meta/muse-wonder',
+    family: 'meta',
+    reasoning: 'minimal', // "Reasoning is mandatory for this endpoint" (smoke 2026-10-13): use the minimum
+    temperature: 1,
+    n_default: 6,
+    openrouter: { order: ['meta'], allow_fallbacks: false },
+    price: { input: 4, output: 20, source: 'OpenRouter /models, 2026-10-13' },
+  },
+  // Meta's small tier (open-weight, distilled from Muse Spark); the Haiku / Luna analog by tier, not by price.
+  {
+    id: 'muse-glimmer-30b',
+    provider: 'openrouter',
+    model_id: 'meta/muse-glimmer-30b',
+    family: 'meta',
+    reasoning: 'minimal', // "Reasoning is mandatory for this endpoint" (smoke 2026-10-13): use the minimum
+    temperature: 1,
+    n_default: 12,
+    openrouter: { order: ['deepinfra/bf16'], allow_fallbacks: false, quantizations: ['bf16'] },
+    price: { input: 0.3, output: 1.2, source: 'OpenRouter /models, 2026-10-13' },
+  },
   {
     id: 'qwen3.8-flash',
     provider: 'openrouter',
