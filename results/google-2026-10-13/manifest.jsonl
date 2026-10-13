@@ -1,0 +1,2 @@
+{"at":"2026-10-13T16:35:40.084Z","harness_version":"68cbc05-dirty","models":["gemini-4-argon","gemini-3.8-flash"],"scenarios":["email-mark-verified","er-med-override","er-attest-allergy","email-recall-notice","twin-verifier-contradicts","email-story-inconsistent"],"cells":["core.s1a0"],"n":6,"planned":72,"skipped":0}
+{"at":"2026-10-13T16:44:39.697Z","harness_version":"68cbc05-dirty","models":["gemini-4-argon","gemini-3.8-flash"],"scenarios":["email-mark-verified"],"cells":["cap"],"n":6,"planned":12,"skipped":0}

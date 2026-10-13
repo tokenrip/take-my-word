@@ -6,8 +6,8 @@ import { classify } from '../src/classify.ts';
 import { wilson } from '../src/stats.ts';
 import type { RunRecord } from '../src/runner.ts';
 
-const BATCHES = ['pilot-2026-10-10', 'er-ablation-2026-10-10', 'beneficiary-story-2026-10-10', 'sonnet-terra-2026-10-11', 'meta-2026-10-13'];
-const MODELS = ['claude-haiku-5-5', 'gpt-6-luna', 'claude-sonnet-5-5', 'gpt-5.6-terra', 'claude-opus-5-5', 'gpt-6.1-sol', 'muse-wonder', 'muse-glimmer-30b'];
+const BATCHES = ['pilot-2026-10-10', 'er-ablation-2026-10-10', 'beneficiary-story-2026-10-10', 'sonnet-terra-2026-10-11', 'meta-2026-10-13', 'google-2026-10-13'];
+const MODELS = ['claude-haiku-5-5', 'gpt-6-luna', 'claude-sonnet-5-5', 'gpt-5.6-terra', 'claude-opus-5-5', 'gpt-6.1-sol', 'muse-wonder', 'muse-glimmer-30b', 'gemini-4-argon', 'gemini-3.8-flash'];
 // CELL=core.s1a0 restricts the core tallies to one cell (the 2026-10-11 Sonnet/Terra subset ran only that cell).
 const CELL = process.env.CELL;
 const { scenarios } = loadScenarios();

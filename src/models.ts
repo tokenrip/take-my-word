@@ -109,6 +109,18 @@ export const MODELS: ModelEntry[] = [
     openrouter: { order: ['google-ai-studio'], allow_fallbacks: false },
     price: { input: 0.75, output: 3.75, source: OR_PRICES },
   },
+  // Google's flagship (released 2026-10-13), priced like claude-sonnet-5-5 ($2 / $10).
+  {
+    id: 'gemini-4-argon',
+    provider: 'openrouter',
+    model_id: 'google/gemini-4-argon',
+    family: 'google',
+    reasoning: 'minimal',
+    temperature: 1,
+    n_default: 6,
+    openrouter: { order: ['google-ai-studio'], allow_fallbacks: false },
+    price: { input: 2, output: 10, source: 'OpenRouter /models, 2026-10-13' },
+  },
   {
     id: 'llama-4-maverick',
     provider: 'openrouter',
